@@ -497,8 +497,8 @@ function Home() {
                   <h3>Abhishek Awasthi</h3>
                   <strong>Founder &amp; Operations</strong>
                   <p>
-                    Helping build AGX through efficient operations,
-                    client support and a commitment to dependable service.
+                    Driving AGX with a focus on professional services,
+                    technology and a better client experience.
                   </p>
                 </div>
               </div>
@@ -517,8 +517,8 @@ function Home() {
                   <h3>Akash Awasthi</h3>
                   <strong>Founder &amp; CEO</strong>
                   <p>
-                    Driving AGX with a focus on professional services,
-                    technology and a better client experience.
+                    Helping build AGX through efficient operations,
+                    client support and a commitment to dependable service.
                   </p>
                 </div>
               </div>
