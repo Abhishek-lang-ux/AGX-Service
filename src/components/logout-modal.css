@@ -1,0 +1,234 @@
+.logout-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(10, 27, 48, 0.52);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+
+  animation: logoutOverlayIn 0.2s ease;
+}
+
+.logout-modal {
+  position: relative;
+  width: min(430px, 100%);
+  background: #ffffff;
+  border: 1px solid #dce5ef;
+  border-radius: 22px;
+  padding: 30px;
+
+  box-shadow: 0 25px 70px rgba(17, 42, 70, 0.22);
+
+  animation: logoutModalIn 0.25s ease;
+}
+
+.logout-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+
+  width: 34px;
+  height: 34px;
+
+  border: 1px solid #e1e8f0;
+  border-radius: 10px;
+
+  background: #ffffff;
+  color: #728198;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.logout-modal-close:hover {
+  color: #172c46;
+  background: #f5f8fc;
+  border-color: #cbd8e6;
+}
+
+.logout-modal-icon {
+  width: 54px;
+  height: 54px;
+
+  margin-bottom: 18px;
+
+  border-radius: 16px;
+  background: #fff1ef;
+  color: #d34d42;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logout-modal-content {
+  padding-right: 25px;
+}
+
+.logout-modal-label {
+  display: block;
+  margin-bottom: 6px;
+
+  color: #8b99aa;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+}
+
+.logout-modal-content h2 {
+  margin: 0 0 8px;
+
+  color: #122640;
+  font-size: 23px;
+  line-height: 1.25;
+}
+
+.logout-modal-content p {
+  margin: 0;
+
+  color: #687991;
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.logout-security-note {
+  margin-top: 20px;
+  padding: 12px 13px;
+
+  border: 1px solid #dce9f5;
+  border-radius: 12px;
+
+  background: #f4f8fc;
+  color: #60738a;
+
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.logout-security-note svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: #1769d5;
+}
+
+.logout-modal-actions {
+  margin-top: 22px;
+
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.logout-cancel-btn,
+.logout-confirm-btn {
+  min-height: 42px;
+  padding: 0 17px;
+
+  border-radius: 11px;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.logout-cancel-btn {
+  border: 1px solid #d8e2ec;
+  background: #ffffff;
+  color: #5d7087;
+}
+
+.logout-cancel-btn:hover:not(:disabled) {
+  background: #f5f8fc;
+  border-color: #c6d3e0;
+}
+
+.logout-confirm-btn {
+  border: 1px solid #d34d42;
+  background: #d34d42;
+  color: #ffffff;
+}
+
+.logout-confirm-btn:hover:not(:disabled) {
+  background: #c33f35;
+  border-color: #c33f35;
+  transform: translateY(-1px);
+}
+
+.logout-cancel-btn:disabled,
+.logout-confirm-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+
+@keyframes logoutOverlayIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes logoutModalIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 480px) {
+  .logout-modal-overlay {
+    padding: 15px;
+    align-items: flex-end;
+  }
+
+  .logout-modal {
+    border-radius: 20px;
+    padding: 25px 20px 20px;
+  }
+
+  .logout-modal-content h2 {
+    font-size: 21px;
+  }
+
+  .logout-modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .logout-cancel-btn,
+  .logout-confirm-btn {
+    width: 100%;
+  }
+}

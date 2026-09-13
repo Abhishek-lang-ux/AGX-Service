@@ -1,0 +1,311 @@
+import {
+  ArrowLeft,
+  Check,
+  CheckCircle2,
+  ChevronRight,
+  KeyRound,
+  LockKeyhole,
+  ShieldCheck,
+  Smartphone,
+} from "lucide-react";
+import { Link } from "react-router-dom";
+import { useState } from "react";
+import "./two-factor-auth.css";
+
+function TwoFactorAuth() {
+  const [enabled, setEnabled] = useState(false);
+  const [showSetup, setShowSetup] = useState(false);
+
+  const handleSetup = () => {
+    setShowSetup(true);
+  };
+
+  const handleEnable = () => {
+    setEnabled(true);
+    setShowSetup(false);
+  };
+
+  return (
+    <main className="twofa-page">
+      <div className="twofa-container">
+
+        {/* Top */}
+        <div className="twofa-top">
+          <Link to="/settings" className="twofa-back">
+            <ArrowLeft size={17} />
+            Back to Settings
+          </Link>
+
+          <span>SECURITY / 2FA</span>
+        </div>
+
+
+        {/* Header */}
+        <section className="twofa-header">
+
+          <div className={`twofa-main-icon ${enabled ? "enabled" : ""}`}>
+            <ShieldCheck size={25} />
+          </div>
+
+          <div>
+            <span>ACCOUNT SECURITY</span>
+
+            <h1>Two-Factor Authentication</h1>
+
+            <p>
+              Add an extra layer of protection to your AGX account.
+            </p>
+          </div>
+
+        </section>
+
+
+        {/* Status */}
+        <section className={`twofa-status ${enabled ? "active" : ""}`}>
+
+          <div className="twofa-status-icon">
+            {enabled ? (
+              <CheckCircle2 size={21} />
+            ) : (
+              <LockKeyhole size={21} />
+            )}
+          </div>
+
+          <div>
+            <span>STATUS</span>
+
+            <strong>
+              {enabled ? "Two-factor authentication is enabled" : "Not enabled"}
+            </strong>
+
+            <p>
+              {enabled
+                ? "Your account now has an additional security layer."
+                : "Protect your account by requiring a verification code when signing in."}
+            </p>
+          </div>
+
+          <span className={`twofa-status-badge ${enabled ? "active" : ""}`}>
+            {enabled ? "PROTECTED" : "NOT ENABLED"}
+          </span>
+
+        </section>
+
+
+        {/* Setup */}
+        {!enabled && !showSetup && (
+          <section className="twofa-card">
+
+            <div className="twofa-card-header">
+              <div>
+                <span>GET STARTED</span>
+                <h2>Enable two-factor authentication</h2>
+              </div>
+
+              <div className="twofa-card-icon">
+                <Smartphone size={19} />
+              </div>
+            </div>
+
+
+            <p className="twofa-description">
+              Two-factor authentication helps prevent unauthorized access even
+              if your password is compromised.
+            </p>
+
+
+            <div className="twofa-method">
+
+              <div className="twofa-method-icon">
+                <Smartphone size={20} />
+              </div>
+
+              <div>
+                <strong>Authenticator App</strong>
+
+                <small>
+                  Use an authenticator app to generate secure verification codes.
+                </small>
+              </div>
+
+              <ChevronRight size={17} />
+
+            </div>
+
+
+            <button
+              type="button"
+              className="twofa-primary-btn"
+              onClick={handleSetup}
+            >
+              Set Up Authentication
+              <ChevronRight size={16} />
+            </button>
+
+          </section>
+        )}
+
+
+        {/* Setup Steps */}
+        {!enabled && showSetup && (
+          <section className="twofa-card">
+
+            <div className="twofa-card-header">
+              <div>
+                <span>SETUP</span>
+                <h2>Set up your authenticator</h2>
+              </div>
+
+              <div className="twofa-card-icon">
+                <KeyRound size={19} />
+              </div>
+            </div>
+
+
+            <div className="twofa-steps">
+
+              <div className="twofa-step active">
+                <span>1</span>
+
+                <div>
+                  <strong>Install an authenticator app</strong>
+                  <small>
+                    Use a trusted authenticator application on your phone.
+                  </small>
+                </div>
+              </div>
+
+
+              <div className="twofa-step">
+                <span>2</span>
+
+                <div>
+                  <strong>Scan your setup QR code</strong>
+                  <small>
+                    Scan the QR code provided during account setup.
+                  </small>
+                </div>
+              </div>
+
+
+              <div className="twofa-step">
+                <span>3</span>
+
+                <div>
+                  <strong>Enter the verification code</strong>
+                  <small>
+                    Enter the six-digit code generated by your authenticator.
+                  </small>
+                </div>
+              </div>
+
+            </div>
+
+
+            {/* Frontend Placeholder */}
+            <div className="twofa-qr-placeholder">
+
+              <div className="qr-box">
+                <div className="qr-grid">
+                  <i />
+                  <i />
+                  <i />
+                  <i />
+                  <i />
+                  <i />
+                  <i />
+                  <i />
+                  <i />
+                </div>
+              </div>
+
+              <div>
+                <strong>Authentication Setup</strong>
+
+                <p>
+                  QR generation and verification will be connected during
+                  backend integration.
+                </p>
+              </div>
+
+            </div>
+
+
+            <div className="twofa-code-area">
+
+              <label>Verification Code</label>
+
+              <input
+                type="text"
+                inputMode="numeric"
+                maxLength="6"
+                placeholder="000000"
+              />
+
+              <small>
+                Enter the 6-digit code from your authenticator app.
+              </small>
+
+            </div>
+
+
+            <div className="twofa-actions">
+
+              <button
+                type="button"
+                className="twofa-cancel-btn"
+                onClick={() => setShowSetup(false)}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                className="twofa-primary-btn"
+                onClick={handleEnable}
+              >
+                <Check size={16} />
+                Enable 2FA
+              </button>
+
+            </div>
+
+          </section>
+        )}
+
+
+        {/* Benefits */}
+        <section className="twofa-benefits">
+
+          <div className="twofa-benefit">
+            <ShieldCheck size={18} />
+            <div>
+              <strong>Extra protection</strong>
+              <small>Helps secure your account beyond your password.</small>
+            </div>
+          </div>
+
+          <div className="twofa-benefit">
+            <LockKeyhole size={18} />
+            <div>
+              <strong>Secure login</strong>
+              <small>A verification code is required during sign-in.</small>
+            </div>
+          </div>
+
+          <div className="twofa-benefit">
+            <KeyRound size={18} />
+            <div>
+              <strong>Recovery options</strong>
+              <small>Recovery methods will be available later.</small>
+            </div>
+          </div>
+
+        </section>
+
+      </div>
+    </main>
+  );
+}
+
+export default TwoFactorAuth;
