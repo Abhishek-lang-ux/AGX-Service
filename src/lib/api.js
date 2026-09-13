@@ -128,13 +128,7 @@ export async function apiRequest(path, options = {}) {
    * Parse response
    */
 
-  let data = {};
-
-  try {
-    data = await response.json();
-  } catch {
-    data = {};
-  }
+  const data = await response.json().catch(() => ({}));
 
   /*
    * Handle API errors
@@ -183,6 +177,28 @@ export async function getMyRequest(id) {
 
 export async function createServiceRequest(payload) {
   return apiRequest("/requests", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+/* =========================================================
+   PAYMENTS / RAZORPAY
+========================================================= */
+
+export async function getMyPayments() {
+  return apiRequest("/payments");
+}
+
+export async function createPaymentOrder(requestId) {
+  return apiRequest("/payments/order", {
+    method: "POST",
+    body: JSON.stringify({ requestId }),
+  });
+}
+
+export async function verifyPayment(payload) {
+  return apiRequest("/payments/verify", {
     method: "POST",
     body: JSON.stringify(payload),
   });

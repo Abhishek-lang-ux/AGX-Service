@@ -15,11 +15,14 @@ import {
 } from "lucide-react";
 
 import { Link, useNavigate } from "react-router-dom";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import {
+  createPaymentOrder,
   createServiceRequest,
+  getServices,
   uploadRequestDocuments,
+  verifyPayment,
 } from "../lib/api.js";
 
 import "./newRequest.css";
@@ -33,80 +36,41 @@ const categories = [
   { id: "digital", label: "Digital Services", icon: Monitor },
 ];
 
-const services = [
-  {
-    id: 1,
-    title: "GST Registration",
-    category: "business",
-    description:
-      "Complete assistance for GST registration and application processing.",
-    price: "₹1,499",
-    popular: true,
-  },
-  {
-    id: 2,
-    title: "Income Tax Filing",
-    category: "tax",
-    description:
-      "Professional assistance for preparing and filing your income tax return.",
-    price: "₹799",
-    popular: true,
-  },
-  {
-    id: 3,
-    title: "PAN Card Assistance",
-    category: "government",
-    description:
-      "PAN application assistance with document verification and submission.",
-    price: "₹299",
-    popular: false,
-  },
-  {
-    id: 4,
-    title: "PF Withdrawal Assistance",
-    category: "government",
-    description:
-      "Assistance with EPFO/PF withdrawal process and required documents.",
-    price: "₹499",
-    popular: true,
-  },
-  {
-    id: 5,
-    title: "Business Registration",
-    category: "business",
-    description:
-      "Guidance and assistance for registering your business.",
-    price: "₹2,499",
-    popular: false,
-  },
-  {
-    id: 6,
-    title: "Accounting Support",
-    category: "accounting",
-    description:
-      "Bookkeeping and accounting assistance for your business requirements.",
-    price: "₹1,999",
-    popular: false,
-  },
-  {
-    id: 7,
-    title: "Website Development",
-    category: "digital",
-    description:
-      "Professional business website design and development assistance.",
-    price: "₹4,999",
-    popular: false,
-  },
-  {
-    id: 8,
-    title: "Documentation Services",
-    category: "business",
-    description:
-      "Organised documentation and application support for selected requirements.",
-    price: "₹599",
-    popular: false,
-  },
-];
+const categoryMeta = {
+  tax: { label: "Tax & Compliance", icon: ReceiptText },
+  business: { label: "Business Services", icon: Landmark },
+  government: { label: "Government Services", icon: UserRound },
+  accounting: { label: "Accounting", icon: IndianRupee },
+  digital: { label: "Digital Services", icon: Monitor },
+  consultation: { label: "Consultation", icon: BriefcaseBusiness },
+  compliance: { label: "Compliance", icon: ReceiptText },
+};
+
+const categoryAliases = {
+  gst: "business",
+  "income tax": "tax",
+  "income tax filing": "tax",
+  accounting: "accounting",
+  "business": "business",
+  "government": "government",
+  "digital": "digital",
+  consultation: "consultation",
+  compliance: "compliance",
+};
+
+function normalizeCategory(value = "") {
+  const key = String(value).trim().toLowerCase();
+  return categoryAliases[key] || key || "business";
+}
+
+function formatServicePrice(amount) {
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 0,
+  }).format(Number(amount) || 0);
+}
+
 
 function NewRequest() {
   const navigate = useNavigate();
@@ -114,6 +78,8 @@ function NewRequest() {
 
   const [category, setCategory] = useState("all");
   const [search, setSearch] = useState("");
+  const [services, setServices] = useState([]);
+  const [isLoadingServices, setIsLoadingServices] = useState(true);
   const [selectedService, setSelectedService] = useState(null);
   const [step, setStep] = useState(1);
 
@@ -128,6 +94,42 @@ function NewRequest() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
 
+  useEffect(() => {
+    let mounted = true;
+
+    (async () => {
+      try {
+        setIsLoadingServices(true);
+        const response = await getServices();
+        if (!mounted) return;
+
+        const backendServices = Array.isArray(response?.services)
+          ? response.services
+          : [];
+
+        setServices(backendServices.map((service) => ({
+          id: Number(service.id),
+          slug: service.slug,
+          title: service.name,
+          category: normalizeCategory(service.category),
+          description: service.description || service.shortDescription || "AGX professional service assistance.",
+          price: formatServicePrice(service.basePrice),
+          amount: Number(service.basePrice) || 0,
+          popular: Number(service.displayOrder) <= 2,
+        })));
+      } catch (serviceError) {
+        console.error("Load services error:", serviceError);
+        if (mounted) {
+          setError(serviceError?.message || "Unable to load services. Please try again.");
+        }
+      } finally {
+        if (mounted) setIsLoadingServices(false);
+      }
+    })();
+
+    return () => { mounted = false; };
+  }, []);
+
   const filteredServices = useMemo(() => {
     return services.filter((service) => {
       const matchesCategory =
@@ -139,7 +141,7 @@ function NewRequest() {
 
       return matchesCategory && matchesSearch;
     });
-  }, [category, search]);
+  }, [category, search, services]);
 
   const selectService = (service) => {
     setSelectedService(service);
@@ -208,7 +210,10 @@ function NewRequest() {
     try {
       // Payload exactly according to request.controller.js
       const payload = {
+        // Send both IDs for backward compatibility. Backend resolves by slug
+        // first so different database auto-increment IDs cannot break requests.
         serviceId: Number(selectedService.id),
+        serviceSlug: selectedService.slug,
         title: selectedService.title,
         description: requirement.trim(),
         priority: "normal",
@@ -227,20 +232,25 @@ function NewRequest() {
       // Upload documents after request creation, if any were selected.
       if (selectedFiles.length > 0 && createdRequest.id) {
         try {
-          await uploadRequestDocuments(
-            createdRequest.id,
-            selectedFiles
-          );
+          await uploadRequestDocuments(createdRequest.id, selectedFiles);
         } catch (uploadError) {
-          console.error(
-            "Request created but document upload failed:",
-            uploadError
-          );
+          console.error("Request created but document upload failed:", uploadError);
         }
       }
 
-      // Go to My Requests after successful creation.
-      navigate("/myrequests");
+      // Create the Razorpay order on the server. The amount is always taken
+      // from the database-backed service/request, never from the browser.
+      const orderResponse = await createPaymentOrder(createdRequest.id);
+
+      if (!orderResponse?.success || !orderResponse?.order?.id) {
+        throw new Error(orderResponse?.message || "Unable to start secure payment.");
+      }
+
+      await openRazorpayCheckout({
+        keyId: orderResponse.keyId,
+        order: orderResponse.order,
+        request: orderResponse.request,
+      });
     } catch (requestError) {
       console.error("Create request error:", requestError);
 
@@ -251,6 +261,73 @@ function NewRequest() {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const openRazorpayCheckout = async ({ keyId, order, request }) => {
+    if (!window.Razorpay) {
+      await new Promise((resolve, reject) => {
+        const existing = document.querySelector('script[data-agx-razorpay="true"]');
+        if (existing) {
+          existing.addEventListener("load", resolve, { once: true });
+          existing.addEventListener("error", reject, { once: true });
+          return;
+        }
+
+        const script = document.createElement("script");
+        script.src = "https://checkout.razorpay.com/v1/checkout.js";
+        script.async = true;
+        script.dataset.agxRazorpay = "true";
+        script.onload = resolve;
+        script.onerror = () => reject(new Error("Razorpay Checkout could not be loaded. Please check your internet connection."));
+        document.body.appendChild(script);
+      });
+    }
+
+    if (!window.Razorpay) {
+      throw new Error("Razorpay Checkout is unavailable. Please try again.");
+    }
+
+    await new Promise((resolve, reject) => {
+      const checkout = new window.Razorpay({
+        key: keyId || import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount: order.amount,
+        currency: order.currency || "INR",
+        name: "AGX Software Services",
+        description: `${request.serviceName} · ${request.requestNumber}`,
+        order_id: order.id,
+        prefill: {
+          email: "",
+        },
+        theme: { color: "#0f766e" },
+        modal: {
+          ondismiss: () => {
+            setError("Payment window closed. Your request is saved and payment is still pending.");
+            resolve();
+          },
+        },
+        handler: async (paymentResponse) => {
+          try {
+            await verifyPayment({
+              requestId: request.id,
+              razorpay_order_id: paymentResponse.razorpay_order_id,
+              razorpay_payment_id: paymentResponse.razorpay_payment_id,
+              razorpay_signature: paymentResponse.razorpay_signature,
+            });
+
+            resolve();
+            navigate("/payments");
+          } catch (verificationError) {
+            reject(verificationError);
+          }
+        },
+      });
+
+      checkout.on("payment.failed", (response) => {
+        reject(new Error(response?.error?.description || "Razorpay payment failed. Please try again."));
+      });
+
+      checkout.open();
+    });
   };
 
   return (
@@ -362,6 +439,12 @@ function NewRequest() {
                 </strong>
               </div>
 
+              {isLoadingServices ? (
+                <div className="new-request-empty">
+                  <strong>Loading available services...</strong>
+                  <span>Please wait while AGX loads the latest service list.</span>
+                </div>
+              ) : (
               <div className="new-request-service-grid">
                 {filteredServices.map((service) => (
                   <article
@@ -381,10 +464,7 @@ function NewRequest() {
                     <div className="new-service-card-content">
                       <span className="new-service-category">
                         {
-                          categories.find(
-                            (item) =>
-                              item.id === service.category
-                          )?.label
+                          categoryMeta[service.category]?.label || service.category
                         }
                       </span>
 
@@ -410,8 +490,9 @@ function NewRequest() {
                   </article>
                 ))}
               </div>
+              )}
 
-              {!filteredServices.length && (
+              {!isLoadingServices && !filteredServices.length && (
                 <div className="new-request-empty">
                   <Search size={27} />
                   <strong>No matching service found</strong>

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowDownToLine,
   ArrowUpRight,
@@ -14,61 +14,11 @@ import {
   WalletCards,
   XCircle,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { createPaymentOrder, getMyPayments, verifyPayment } from "../lib/api.js";
 import "./payments.css";
 
-const paymentsData = [
-  {
-    id: "PAY-2081",
-    invoice: "INV-AGX-1024",
-    request: "AGX-1024",
-    service: "GST Registration",
-    date: "10 Sep 2026",
-    amount: 1499,
-    status: "Paid",
-    method: "UPI",
-  },
-  {
-    id: "PAY-2072",
-    invoice: "INV-AGX-1019",
-    request: "AGX-1019",
-    service: "Income Tax Filing",
-    date: "06 Sep 2026",
-    amount: 999,
-    status: "Paid",
-    method: "Card",
-  },
-  {
-    id: "PAY-2058",
-    invoice: "INV-AGX-1008",
-    request: "AGX-1008",
-    service: "Accounting Support",
-    date: "28 Aug 2026",
-    amount: 2499,
-    status: "Paid",
-    method: "Net Banking",
-  },
-  {
-    id: "PAY-2044",
-    invoice: "INV-AGX-0997",
-    request: "AGX-0997",
-    service: "Website Development",
-    date: "19 Aug 2026",
-    amount: 5999,
-    status: "Pending",
-    method: "—",
-  },
-  {
-    id: "PAY-2031",
-    invoice: "INV-AGX-0989",
-    request: "AGX-0989",
-    service: "PAN Card Assistance",
-    date: "12 Aug 2026",
-    amount: 499,
-    status: "Failed",
-    method: "UPI",
-  },
-];
+const paymentsData = [];
 
 const formatAmount = (amount) =>
   new Intl.NumberFormat("en-IN", {
@@ -78,15 +28,34 @@ const formatAmount = (amount) =>
   }).format(amount);
 
 function Payments() {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("All");
+  const [payments, setPayments] = useState(paymentsData);
   const [showPayModal, setShowPayModal] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState(null);
+  const [paymentError, setPaymentError] = useState("");
+  const [isPaying, setIsPaying] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    getMyPayments()
+      .then((response) => {
+        if (mounted) setPayments(response?.payments || []);
+      })
+      .catch((error) => {
+        console.error("Load payments error:", error);
+        if (mounted) setPaymentError(error?.message || "Unable to load payments.");
+      })
+;
+
+    return () => { mounted = false; };
+  }, []);
 
   const filteredPayments = useMemo(() => {
     const term = search.trim().toLowerCase();
 
-    return paymentsData.filter((payment) => {
+    return payments.filter((payment) => {
       const matchesFilter = filter === "All" || payment.status === filter;
       const matchesSearch =
         !term ||
@@ -97,19 +66,96 @@ function Payments() {
 
       return matchesFilter && matchesSearch;
     });
-  }, [search, filter]);
+  }, [payments, search, filter]);
 
-  const paidTotal = paymentsData
+  const paidTotal = payments
     .filter((item) => item.status === "Paid")
     .reduce((sum, item) => sum + item.amount, 0);
 
-  const pendingTotal = paymentsData
+  const pendingTotal = payments
     .filter((item) => item.status === "Pending")
     .reduce((sum, item) => sum + item.amount, 0);
 
   const openPayment = (payment) => {
+    if (!payment?.requestId) return;
+    setPaymentError("");
     setSelectedPayment(payment);
     setShowPayModal(true);
+  };
+
+  const startRazorpayPayment = async () => {
+    if (!selectedPayment?.requestId || isPaying) return;
+    setIsPaying(true);
+    setPaymentError("");
+
+    try {
+      const orderResponse = await createPaymentOrder(selectedPayment.requestId);
+
+      if (!orderResponse?.order?.id) {
+        throw new Error(orderResponse?.message || "Unable to start payment.");
+      }
+
+      if (!window.Razorpay) {
+        await new Promise((resolve, reject) => {
+          const existing = document.querySelector('script[data-agx-razorpay="true"]');
+          if (existing) {
+            existing.addEventListener("load", resolve, { once: true });
+            existing.addEventListener("error", reject, { once: true });
+            return;
+          }
+          const script = document.createElement("script");
+          script.src = "https://checkout.razorpay.com/v1/checkout.js";
+          script.async = true;
+          script.dataset.agxRazorpay = "true";
+          script.onload = resolve;
+          script.onerror = () => reject(new Error("Razorpay Checkout could not be loaded."));
+          document.body.appendChild(script);
+        });
+      }
+
+      await new Promise((resolve, reject) => {
+        const checkout = new window.Razorpay({
+          key: orderResponse.keyId || import.meta.env.VITE_RAZORPAY_KEY_ID,
+          amount: orderResponse.order.amount,
+          currency: orderResponse.order.currency || "INR",
+          name: "AGX Software Services",
+          description: `${orderResponse.request.serviceName} · ${orderResponse.request.requestNumber}`,
+          order_id: orderResponse.order.id,
+          theme: { color: "#0f766e" },
+          modal: {
+            ondismiss: () => resolve(),
+          },
+          handler: async (response) => {
+            try {
+              await verifyPayment({
+                requestId: selectedPayment.requestId,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+              });
+              resolve();
+              setShowPayModal(false);
+              setSelectedPayment(null);
+              const refreshed = await getMyPayments();
+              setPayments(refreshed?.payments || []);
+              navigate("/payments", { replace: true });
+            } catch (error) {
+              reject(error);
+            }
+          },
+        });
+
+        checkout.on("payment.failed", (response) => {
+          reject(new Error(response?.error?.description || "Payment failed. Please try again."));
+        });
+        checkout.open();
+      });
+    } catch (error) {
+      console.error("Razorpay payment error:", error);
+      setPaymentError(error?.message || "Unable to complete payment.");
+    } finally {
+      setIsPaying(false);
+    }
   };
 
   return (
@@ -231,6 +277,10 @@ function Payments() {
                 </div>
               </div>
 
+              {paymentError && (
+                <div className="request-form-error" role="alert">{paymentError}</div>
+              )}
+
               <div className="payments-table-wrap">
                 <table className="payments-table">
                   <thead>
@@ -340,7 +390,7 @@ function Payments() {
                   type="button"
                   onClick={() =>
                     openPayment(
-                      paymentsData.find((item) => item.status === "Pending")
+                      payments.find((item) => item.status === "Pending")
                     )
                   }
                   className="billing-primary-btn"
@@ -425,8 +475,13 @@ function Payments() {
               </button>
             </div>
 
-            <button type="button" className="modal-pay-btn">
-              Proceed to secure payment
+            <button
+              type="button"
+              className="modal-pay-btn"
+              onClick={startRazorpayPayment}
+              disabled={isPaying}
+            >
+              {isPaying ? "Opening secure payment..." : "Proceed to secure payment"}
               <ArrowUpRight size={17} />
             </button>
 
