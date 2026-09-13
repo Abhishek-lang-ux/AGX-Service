@@ -14,12 +14,13 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import LogoutModal from "./LogoutModal";
-import { getNotifications } from "../lib/api";
+import { apiRequest, getNotifications } from "../lib/api";
 import "./navbar.css";
 
 function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
+  const [profile, setProfile] = useState(null);
 
   // Frontend demo authentication state.
   // Backend authentication will replace this later.
@@ -81,6 +82,35 @@ function Navbar() {
     };
   }, [isLoggedIn]);
 
+  useEffect(() => {
+  if (!isLoggedIn) {
+    setProfile(null);
+    return undefined;
+  }
+
+  let cancelled = false;
+
+  async function loadProfile() {
+    try {
+      const data = await apiRequest("/profile");
+
+      if (!cancelled) {
+        setProfile(data?.profile || null);
+      }
+    } catch {
+      if (!cancelled) {
+        setProfile(null);
+      }
+    }
+  }
+
+  loadProfile();
+
+  return () => {
+    cancelled = true;
+  };
+}, [isLoggedIn]);
+
   // Keep the mobile menu usable on narrow screens and close it
   // when keyboard users press Escape or the viewport returns to desktop.
   useEffect(() => {
@@ -128,6 +158,21 @@ function Navbar() {
     setShowLogoutModal(false);
     setIsLoggedIn(false);
   };
+
+  const displayName =
+  `${profile?.firstName || ""} ${profile?.lastName || ""}`.trim() ||
+  "AGX Client";
+
+const initials =
+  displayName
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((word) => word[0])
+    .join("")
+    .toUpperCase() || "AG";
+
+const profilePhoto = profile?.avatarPath || "";
 
   return (
     <header className="navbar">
@@ -184,8 +229,16 @@ function Navbar() {
                 aria-expanded={accountOpen}
               >
                 <span className="account-avatar">
-                  AA
-                </span>
+  {profilePhoto ? (
+    <img
+      src={profilePhoto}
+      alt="Profile"
+      className="navbar-avatar-image"
+    />
+  ) : (
+    initials
+  )}
+</span>
 
                 <span className="account-trigger-text">
                   Account
@@ -200,16 +253,23 @@ function Navbar() {
               {accountOpen && (
                 <div className="account-dropdown">
                   <div className="account-dropdown-header">
-                    <div className="account-avatar large">
-                      AA
-                    </div>
+  <div className="account-avatar large">
+    {profilePhoto ? (
+      <img
+        src={profilePhoto}
+        alt="Profile"
+        className="navbar-avatar-image"
+      />
+    ) : (
+      initials
+    )}
+  </div>
 
-                    <div>
-                      <strong>Akash Awasthi</strong>
-                      <span>Client Account</span>
-                    </div>
-                  </div>
-
+  <div>
+    <strong>{displayName}</strong>
+    <span>Client Account</span>
+  </div>
+</div>
                   <div className="account-dropdown-divider" />
 
                   <Link
@@ -342,14 +402,21 @@ function Navbar() {
             <div className="mobile-account-menu">
               <div className="mobile-account-profile">
                 <span className="account-avatar">
-                  AA
-                </span>
+  {profilePhoto ? (
+    <img
+      src={profilePhoto}
+      alt="Profile"
+      className="navbar-avatar-image"
+    />
+  ) : (
+    initials
+  )}
+</span>
 
-                <div>
-                  <strong>Akash Awasthi</strong>
-                  <span>Client Account</span>
-                </div>
-              </div>
+<div>
+  <strong>{displayName}</strong>
+  <span>Client Account</span>
+</div>
 
               <Link to="/dashboard" onClick={closeMenu}>
                 <LayoutDashboard size={17} />

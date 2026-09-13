@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
-import { getDashboard } from "../lib/api.js";
+import { apiRequest, getDashboard } from "../lib/api.js";
 import "./dashboard.css";
 
 const statusMeta = {
@@ -52,25 +52,46 @@ function Dashboard() {
   const [dashboard, setDashboard] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [profilePhotoUrl, setProfilePhoto] = useState("");
 
   useEffect(() => {
-    let active = true;
+  let active = true;
 
-    getDashboard()
-      .then((data) => {
-        if (active) setDashboard(data);
-      })
-      .catch((err) => {
-        if (active) setError(err.message || "Unable to load dashboard");
-      })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
+  async function loadDashboardData() {
+    try {
+      setLoading(true);
+      setError("");
 
-    return () => {
-      active = false;
-    };
-  }, []);
+      const [dashboardData, profileData] = await Promise.all([
+        getDashboard(),
+        apiRequest("/profile"),
+      ]);
+
+      if (!active) return;
+
+      setDashboard(dashboardData);
+      setProfilePhoto(
+        profileData?.profile?.avatarPath || "",
+      );
+    } catch (err) {
+      if (active) {
+        setError(
+          err.message || "Unable to load dashboard",
+        );
+      }
+    } finally {
+      if (active) {
+        setLoading(false);
+      }
+    }
+  }
+
+  loadDashboardData();
+
+  return () => {
+    active = false;
+  };
+}, []);
 
   const profile = dashboard?.profile;
   const stats = dashboard?.stats;
@@ -140,14 +161,26 @@ function Dashboard() {
             </button>
 
             <Link to="/profile" className="dashboard-profile">
-              <span className="dashboard-avatar">{initials}</span>
-              <span className="dashboard-profile-text">
-                <strong>
-                  {profile?.firstName} {profile?.lastName || ""}
-                </strong>
-                <small>Client Account</small>
-              </span>
-            </Link>
+  <span className="dashboard-avatar">
+    {profilePhoto ? (
+      <img
+        src={profilePhoto}
+        alt="Profile"
+        className="dashboard-avatar-image"
+      />
+    ) : (
+      initials
+    )}
+  </span>
+
+  <span className="dashboard-profile-text">
+    <strong>
+      {profile?.firstName} {profile?.lastName || ""}
+    </strong>
+
+    <small>Client Account</small>
+  </span>
+</Link>
           </div>
         </section>
 
@@ -345,7 +378,17 @@ function Dashboard() {
             </div>
 
             <div className="account-overview">
-              <div className="account-overview-avatar">{initials}</div>
+              <div className="account-overview-avatar">
+  {profilePhoto ? (
+    <img
+      src={profilePhoto}
+      alt="Profile"
+      className="account-overview-avatar-image"
+    />
+  ) : (
+    initials
+  )}
+</div>
               <div>
                 <strong>{profile?.firstName} {profile?.lastName || ""}</strong>
                 <span>Client since {profile?.memberSince || "—"}</span>
