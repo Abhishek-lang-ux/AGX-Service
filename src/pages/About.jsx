@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import "./about.css";
+import Abhishek from "../assets/Abhishek.jpeg";
+import Akash from "../assets/Akash.PNG";
 
 const values = [
   {
@@ -463,6 +465,242 @@ function About() {
         </div>
 
       </section>
+
+      {/* ================= FOUNDERS ================= */}
+            <section className="home-founders-section">
+              <div className="container">
+                <div className="home-founders-heading">
+                  <span className="home-section-label">THE PEOPLE BEHIND AGX</span>
+                  <h2>
+                    Meet Our <span>Founders.</span>
+                  </h2>
+                  <p>
+                    AGX is built with a simple vision — making professional services
+                    easier, more transparent and accessible through technology.
+                  </p>
+                </div>
+      
+                <div className="home-founders-grid">
+                  <article className="home-founder-card">
+                    <div className="home-founder-image-wrap">
+                      <img
+                        src={Abhishek}
+                        alt="Portrait of Abhishek Awasthi, Founder of AGX"
+                        className="home-founder-image"
+                      />
+                      <div className="home-founder-overlay"></div>
+                      <div className="home-founder-info">
+                        <span>FOUNDER</span>
+                        <h3>Abhishek Awasthi</h3>
+                        <strong>Founder &amp; Operations</strong>
+                        <p>
+                          Driving AGX with a focus on professional services,
+                          technology and a better client experience.
+                        </p>
+                      </div>
+                    </div>
+                  </article>
+      
+                  <article className="home-founder-card">
+                    <div className="home-founder-image-wrap">
+                      <img
+                        src={Akash}
+                        alt="portrait for AGX Founder"
+                        className="home-founder-image"
+                      />
+                      <div className="home-founder-overlay"></div>
+                      <div className="home-founder-info">
+                        <span>FOUNDER</span>
+                        <h3>Akash Awasthi</h3>
+                        <strong>Founder &amp; CEO</strong>
+                        <p>
+                          Helping build AGX through efficient operations,
+                          client support and a commitment to dependable service.
+                        </p>
+                      </div>
+                    </div>
+                  </article>
+                </div>
+              </div>
+            </section>
+      
+            {/* Founder section styles — kept here so no other CSS file needs to be changed */}
+            <style>{`
+              .home-founders-section {
+                position: relative;
+                padding: 100px 0;
+                background: #f8fbff;
+                overflow: hidden;
+              }
+      
+              .home-founders-section::before {
+                content: "";
+                position: absolute;
+                inset: 0;
+                background-image:
+                  linear-gradient(rgba(37, 99, 235, 0.045) 1px, transparent 1px),
+                  linear-gradient(90deg, rgba(37, 99, 235, 0.045) 1px, transparent 1px);
+                background-size: 48px 48px;
+                pointer-events: none;
+              }
+      
+              .home-founders-heading {
+                position: relative;
+                z-index: 1;
+                max-width: 720px;
+                margin: 0 auto 48px;
+                text-align: center;
+              }
+      
+              .home-founders-heading h2 {
+                margin: 10px 0 14px;
+                font-size: clamp(32px, 4vw, 48px);
+                line-height: 1.08;
+                letter-spacing: -1.5px;
+                color: #0b1220;
+              }
+      
+              .home-founders-heading h2 span {
+                color: #2563eb;
+              }
+      
+              .home-founders-heading p {
+                max-width: 650px;
+                margin: 0 auto;
+                color: #64748b;
+                font-size: 16px;
+                line-height: 1.7;
+              }
+      
+              .home-founders-grid {
+                position: relative;
+                z-index: 1;
+                max-width: 980px;
+                margin: 0 auto;
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 28px;
+              }
+      
+              .home-founder-card {
+                min-width: 0;
+                border-radius: 20px;
+                overflow: hidden;
+                background: #dce6f0;
+                box-shadow: 0 18px 45px rgba(15, 23, 42, 0.14);
+                border: 1px solid rgba(148, 163, 184, 0.25);
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+              }
+      
+              .home-founder-card:hover {
+                transform: translateY(-6px);
+                box-shadow: 0 25px 55px rgba(15, 23, 42, 0.2);
+              }
+      
+              .home-founder-image-wrap {
+                position: relative;
+                height: 500px;
+                overflow: hidden;
+                background: linear-gradient(145deg, #cbd5e1, #eef2f7);
+              }
+      
+              .home-founder-image {
+                width: 100%;
+                height: 100%;
+                display: block;
+                object-fit: cover;
+                object-position: center top;
+                filter: saturate(0.9);
+                transition: transform 0.45s ease;
+              }
+      
+              .home-founder-card:hover .home-founder-image {
+                transform: scale(1.035);
+              }
+      
+              .home-founder-overlay {
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(
+                  to bottom,
+                  rgba(4, 15, 31, 0) 35%,
+                  rgba(4, 15, 31, 0.08) 48%,
+                  rgba(3, 35, 67, 0.9) 100%
+                );
+              }
+      
+              .home-founder-info {
+                position: absolute;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                padding: 28px 30px 30px;
+                color: #fff;
+              }
+      
+              .home-founder-info > span {
+                display: inline-block;
+                margin-bottom: 7px;
+                font-size: 11px;
+                font-weight: 700;
+                letter-spacing: 1.5px;
+                color: rgba(255, 255, 255, 0.72);
+              }
+      
+              .home-founder-info h3 {
+                margin: 0 0 5px;
+                font-size: 28px;
+                line-height: 1.15;
+                color: #fff;
+              }
+      
+              .home-founder-info strong {
+                display: block;
+                font-size: 14px;
+                color: #dbeafe;
+              }
+      
+              .home-founder-info p {
+                max-width: 430px;
+                margin: 11px 0 0;
+                color: rgba(255, 255, 255, 0.82);
+                font-size: 13px;
+                line-height: 1.55;
+              }
+      
+              @media (max-width: 760px) {
+                .home-founders-section {
+                  padding: 72px 0;
+                }
+      
+                .home-founders-heading {
+                  margin-bottom: 34px;
+                }
+      
+                .home-founders-grid {
+                  grid-template-columns: 1fr;
+                  max-width: 520px;
+                }
+      
+                .home-founder-image-wrap {
+                  height: 470px;
+                }
+              }
+      
+              @media (max-width: 480px) {
+                .home-founder-image-wrap {
+                  height: 430px;
+                }
+      
+                .home-founder-info {
+                  padding: 24px 22px 24px;
+                }
+      
+                .home-founder-info h3 {
+                  font-size: 24px;
+                }
+              }
+            `}</style>
 
 
       {/* =====================================================
