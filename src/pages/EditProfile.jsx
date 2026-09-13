@@ -5,7 +5,6 @@ import {
   Mail,
   Phone,
   UserRound,
-  Upload,
   X,
 } from "lucide-react";
 
@@ -16,24 +15,37 @@ import "./editProfile.css";
 
 function EditProfile() {
   const fileInputRef = useRef(null);
+  const previewUrlRef = useRef("");
 
   const [profile, setProfile] = useState(null);
+
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [saving, setSaving] = useState(false);
 
   const [apiError, setApiError] = useState("");
   const [saveMessage, setSaveMessage] = useState("");
-
   const [saved, setSaved] = useState(false);
 
   const [selectedPhoto, setSelectedPhoto] = useState(null);
   const [photoPreview, setPhotoPreview] = useState("");
 
-  /*
-   * =========================================================
-   * LOAD PROFILE
-   * =========================================================
-   */
+  const [form, setForm] = useState({
+    firstName: "",
+    lastName: "",
+    phone: "",
+    dateOfBirth: "",
+    addressLine1: "",
+    addressLine2: "",
+    city: "",
+    state: "",
+    postalCode: "",
+    country: "India",
+    bio: "",
+  });
+
+  /* =========================================================
+     LOAD PROFILE
+  ========================================================= */
 
   useEffect(() => {
     let active = true;
@@ -47,21 +59,38 @@ function EditProfile() {
 
         if (!active) return;
 
-        setProfile(data.profile);
+        const p = data.profile || {};
+
+        setProfile(p);
+
+        setForm({
+          firstName: p.firstName || "",
+          lastName: p.lastName || "",
+          phone: p.phone || "",
+          dateOfBirth: p.dateOfBirth
+            ? String(p.dateOfBirth).slice(0, 10)
+            : "",
+          addressLine1: p.addressLine1 || "",
+          addressLine2: p.addressLine2 || "",
+          city: p.city || "",
+          state: p.state || "",
+          postalCode: p.postalCode || "",
+          country: p.country || "India",
+          bio: p.bio || "",
+        });
 
         /*
-         * If backend already returns a profile photo URL,
-         * use it.
+         * Backend returns avatarPath.
          */
-        if (data.profile?.profileImage) {
-          setPhotoPreview(data.profile.profileImage);
-        } else if (data.profile?.profile_image) {
-          setPhotoPreview(data.profile.profile_image);
+        if (p.avatarPath) {
+          setPhotoPreview(p.avatarPath);
+        } else {
+          setPhotoPreview("");
         }
       } catch (error) {
         if (active) {
           setApiError(
-            error.message || "Unable to load profile"
+            error.message || "Unable to load profile",
           );
         }
       } finally {
@@ -75,14 +104,53 @@ function EditProfile() {
 
     return () => {
       active = false;
+
+      if (previewUrlRef.current) {
+        URL.revokeObjectURL(previewUrlRef.current);
+      }
     };
   }, []);
 
-  /*
-   * =========================================================
-   * OPEN FILE PICKER
-   * =========================================================
-   */
+  /* =========================================================
+     FORM CHANGE
+  ========================================================= */
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+
+    setForm((previous) => ({
+      ...previous,
+      [name]: value,
+    }));
+  };
+
+  /* =========================================================
+     DISPLAY NAME
+  ========================================================= */
+
+  const displayName =
+    [form.firstName, form.lastName]
+      .filter(Boolean)
+      .join(" ") ||
+    profile?.email ||
+    "AGX Client";
+
+  /* =========================================================
+     INITIALS
+  ========================================================= */
+
+  const initials =
+    displayName
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((word) => word[0])
+      .join("")
+      .toUpperCase() || "AA";
+
+  /* =========================================================
+     OPEN FILE PICKER
+  ========================================================= */
 
   const openPhotoPicker = () => {
     if (saving) return;
@@ -90,11 +158,9 @@ function EditProfile() {
     fileInputRef.current?.click();
   };
 
-  /*
-   * =========================================================
-   * PHOTO SELECT
-   * =========================================================
-   */
+  /* =========================================================
+     PHOTO CHANGE
+  ========================================================= */
 
   const handlePhotoChange = (event) => {
     const file = event.target.files?.[0];
@@ -103,10 +169,7 @@ function EditProfile() {
 
     setApiError("");
     setSaveMessage("");
-
-    /*
-     * File type validation
-     */
+    setSaved(false);
 
     const allowedTypes = [
       "image/jpeg",
@@ -116,20 +179,16 @@ function EditProfile() {
 
     if (!allowedTypes.includes(file.type)) {
       setApiError(
-        "Invalid image. Please select a JPG, PNG or WEBP file."
+        "Invalid image. Please select a JPG, PNG or WEBP file.",
       );
 
       event.target.value = "";
       return;
     }
-
-    /*
-     * 5 MB validation
-     */
 
     if (file.size > 5 * 1024 * 1024) {
       setApiError(
-        "Profile photo must be less than 5 MB."
+        "Profile photo must be less than 5 MB.",
       );
 
       event.target.value = "";
@@ -137,53 +196,51 @@ function EditProfile() {
     }
 
     /*
-     * Save selected file
+     * Remove previous temporary preview URL.
      */
-
-    setSelectedPhoto(file);
-
-    /*
-     * Instant preview
-     */
+    if (previewUrlRef.current) {
+      URL.revokeObjectURL(previewUrlRef.current);
+    }
 
     const previewUrl = URL.createObjectURL(file);
 
+    previewUrlRef.current = previewUrl;
+
+    setSelectedPhoto(file);
     setPhotoPreview(previewUrl);
   };
 
-  /*
-   * =========================================================
-   * REMOVE SELECTED PHOTO
-   * =========================================================
-   */
+  /* =========================================================
+     REMOVE SELECTED PHOTO
+  ========================================================= */
 
   const handleRemoveSelectedPhoto = () => {
     setSelectedPhoto(null);
 
-    /*
-     * Restore existing photo if available
-     */
-
-    if (profile?.profileImage) {
-      setPhotoPreview(profile.profileImage);
-    } else if (profile?.profile_image) {
-      setPhotoPreview(profile.profile_image);
-    } else {
-      setPhotoPreview("");
+    if (previewUrlRef.current) {
+      URL.revokeObjectURL(previewUrlRef.current);
+      previewUrlRef.current = "";
     }
+
+    /*
+     * Restore the photo currently saved on server.
+     */
+    setPhotoPreview(profile?.avatarPath || "");
 
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
   };
 
-  /*
-   * =========================================================
-   * SAVE PROFILE
-   * =========================================================
-   */
+  /* =========================================================
+     SAVE PROFILE
+  ========================================================= */
 
-  const saveProfileToApi = async () => {
+  const handleSave = async (event) => {
+    event.preventDefault();
+
+    if (saving) return;
+
     setSaving(true);
     setApiError("");
     setSaveMessage("");
@@ -191,167 +248,178 @@ function EditProfile() {
 
     try {
       /*
-       * IMPORTANT:
-       *
-       * If no photo is selected, normal JSON profile update.
+       * Backend requires firstName.
        */
+      if (!form.firstName.trim()) {
+        setApiError("First name is required.");
+        setSaving(false);
+        return;
+      }
 
-      if (!selectedPhoto) {
-        const payload = {
-          name:
-            document.getElementById("profile-name")?.value ||
-            profile?.firstName ||
-            profile?.name ||
-            "",
+      let response;
 
-          phone:
-            document.getElementById("profile-phone")?.value ||
-            profile?.phone ||
-            "",
+      /* =====================================================
+         WITH PHOTO
+      ===================================================== */
 
-          businessName:
-            document.getElementById("business-name")?.value ||
-            profile?.businessName ||
-            "",
-
-          pan:
-            document.getElementById("profile-pan")?.value ||
-            profile?.pan ||
-            "",
-
-          gstin:
-            document.getElementById("profile-gstin")?.value ||
-            profile?.gstin ||
-            "",
-
-          businessAddress:
-            document.getElementById("business-address")?.value ||
-            profile?.businessAddress ||
-            "",
-        };
-
-        await apiRequest("/profile", {
-          method: "PUT",
-          body: JSON.stringify(payload),
-        });
-      } else {
-        /*
-         * =====================================================
-         * PHOTO UPLOAD
-         * =====================================================
-         *
-         * This requires backend /profile to support
-         * multipart/form-data.
-         */
-
+      if (selectedPhoto) {
         const formData = new FormData();
 
-        formData.append("profileImage", selectedPhoto);
-
-        /*
-         * Normal profile fields
-         */
+        formData.append(
+          "profileImage",
+          selectedPhoto,
+        );
 
         formData.append(
-          "name",
-          document.getElementById("profile-name")?.value ||
-            profile?.firstName ||
-            profile?.name ||
-            ""
+          "firstName",
+          form.firstName.trim(),
+        );
+
+        formData.append(
+          "lastName",
+          form.lastName.trim(),
         );
 
         formData.append(
           "phone",
-          document.getElementById("profile-phone")?.value ||
-            profile?.phone ||
-            ""
+          form.phone.trim(),
         );
 
         formData.append(
-          "businessName",
-          document.getElementById("business-name")?.value ||
-            profile?.businessName ||
-            ""
+          "dateOfBirth",
+          form.dateOfBirth,
         );
 
         formData.append(
-          "pan",
-          document.getElementById("profile-pan")?.value ||
-            profile?.pan ||
-            ""
+          "addressLine1",
+          form.addressLine1.trim(),
         );
 
         formData.append(
-          "gstin",
-          document.getElementById("profile-gstin")?.value ||
-            profile?.gstin ||
-            ""
+          "addressLine2",
+          form.addressLine2.trim(),
         );
 
         formData.append(
-          "businessAddress",
-          document.getElementById("business-address")?.value ||
-            profile?.businessAddress ||
-            ""
+          "city",
+          form.city.trim(),
+        );
+
+        formData.append(
+          "state",
+          form.state.trim(),
+        );
+
+        formData.append(
+          "postalCode",
+          form.postalCode.trim(),
+        );
+
+        formData.append(
+          "country",
+          form.country.trim() || "India",
+        );
+
+        formData.append(
+          "bio",
+          form.bio.trim(),
         );
 
         /*
-         * NOTE:
-         *
-         * apiRequest must support FormData without forcing
-         * Content-Type: application/json.
+         * IMPORTANT:
+         * Do NOT manually set Content-Type.
+         * Browser creates multipart boundary automatically.
          */
-
-        await apiRequest("/profile", {
+        response = await apiRequest("/profile", {
           method: "PUT",
           body: formData,
         });
       }
 
-      /*
-       * Reload fresh profile
-       */
+      /* =====================================================
+         WITHOUT PHOTO
+      ===================================================== */
 
+      else {
+        response = await apiRequest("/profile", {
+          method: "PUT",
+          body: JSON.stringify({
+            firstName: form.firstName.trim(),
+            lastName: form.lastName.trim(),
+            phone: form.phone.trim(),
+            dateOfBirth: form.dateOfBirth,
+            addressLine1: form.addressLine1.trim(),
+            addressLine2: form.addressLine2.trim(),
+            city: form.city.trim(),
+            state: form.state.trim(),
+            postalCode: form.postalCode.trim(),
+            country: form.country.trim() || "India",
+            bio: form.bio.trim(),
+          }),
+        });
+      }
+
+      /*
+       * Reload profile from backend.
+       */
       const fresh = await apiRequest("/profile");
 
-      setProfile(fresh.profile);
+      const freshProfile = fresh.profile;
 
-      /*
-       * Update stored login user
-       */
+      setProfile(freshProfile);
 
-      updateStoredUser({
-        id: fresh.profile.id,
-        uuid: fresh.profile.uuid,
-        email: fresh.profile.email,
-        role: fresh.profile.role,
-        status: fresh.profile.status,
-        firstName: fresh.profile.firstName,
-        lastName: fresh.profile.lastName,
-        profileImage:
-          fresh.profile.profileImage ||
-          fresh.profile.profile_image ||
-          "",
+      setForm({
+        firstName: freshProfile.firstName || "",
+        lastName: freshProfile.lastName || "",
+        phone: freshProfile.phone || "",
+        dateOfBirth: freshProfile.dateOfBirth
+          ? String(freshProfile.dateOfBirth).slice(0, 10)
+          : "",
+        addressLine1: freshProfile.addressLine1 || "",
+        addressLine2: freshProfile.addressLine2 || "",
+        city: freshProfile.city || "",
+        state: freshProfile.state || "",
+        postalCode: freshProfile.postalCode || "",
+        country: freshProfile.country || "India",
+        bio: freshProfile.bio || "",
       });
 
       /*
-       * Update photo preview
+       * Update stored login user.
        */
+      updateStoredUser({
+        id: freshProfile.id,
+        uuid: freshProfile.uuid,
+        email: freshProfile.email,
+        role: freshProfile.role,
+        status: freshProfile.status,
+        firstName: freshProfile.firstName,
+        lastName: freshProfile.lastName,
+        profileImage: freshProfile.avatarPath || "",
+        avatarPath: freshProfile.avatarPath || "",
+      });
 
-      if (fresh.profile?.profileImage) {
-        setPhotoPreview(fresh.profile.profileImage);
-      } else if (fresh.profile?.profile_image) {
-        setPhotoPreview(fresh.profile.profile_image);
-      }
+      /*
+       * Show saved server photo.
+       */
+      setPhotoPreview(
+        freshProfile.avatarPath || "",
+      );
 
       setSelectedPhoto(null);
+
+      if (previewUrlRef.current) {
+        URL.revokeObjectURL(previewUrlRef.current);
+        previewUrlRef.current = "";
+      }
 
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
 
       setSaveMessage(
-        "Profile updated successfully."
+        response?.message ||
+          "Profile updated successfully.",
       );
 
       setSaved(true);
@@ -361,56 +429,16 @@ function EditProfile() {
       }, 2500);
     } catch (error) {
       setApiError(
-        error.message || "Unable to save profile"
+        error.message || "Unable to save profile",
       );
     } finally {
       setSaving(false);
     }
   };
 
-  /*
-   * =========================================================
-   * FORM SUBMIT
-   * =========================================================
-   */
-
-  const handleSave = async (e) => {
-    e.preventDefault();
-
-    if (saving) return;
-
-    await saveProfileToApi();
-  };
-
-  /*
-   * =========================================================
-   * DISPLAY NAME
-   * =========================================================
-   */
-
-  const displayName =
-    profile?.name ||
-    [
-      profile?.firstName,
-      profile?.lastName,
-    ]
-      .filter(Boolean)
-      .join(" ") ||
-    "Akash Awasthi";
-
-  /*
-   * =========================================================
-   * INITIALS
-   * =========================================================
-   */
-
-  const initials = displayName
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((word) => word[0])
-    .join("")
-    .toUpperCase();
+  /* =========================================================
+     RENDER
+  ========================================================= */
 
   return (
     <main className="edit-profile-page">
@@ -454,7 +482,7 @@ function EditProfile() {
         </section>
 
         {/* =====================================================
-            API STATUS
+            STATUS
         ===================================================== */}
 
         {loadingProfile && (
@@ -523,10 +551,8 @@ function EditProfile() {
                     className="edit-profile-photo-image"
                   />
                 ) : (
-                  initials || "AA"
+                  initials
                 )}
-
-                {/* Camera */}
 
                 <button
                   type="button"
@@ -543,7 +569,6 @@ function EditProfile() {
               {/* Photo information */}
 
               <div>
-
                 <strong>
                   {displayName}
                 </strong>
@@ -561,7 +586,6 @@ function EditProfile() {
                     flexWrap: "wrap",
                   }}
                 >
-
                   <button
                     type="button"
                     className="change-photo-btn"
@@ -594,7 +618,6 @@ function EditProfile() {
                       Remove
                     </button>
                   )}
-
                 </div>
 
                 {selectedPhoto && (
@@ -609,11 +632,9 @@ function EditProfile() {
                     New photo selected: {selectedPhoto.name}
                   </small>
                 )}
-
               </div>
 
             </div>
-
           </section>
 
           {/* ===================================================
@@ -623,233 +644,268 @@ function EditProfile() {
           <section className="edit-profile-card">
 
             <div className="edit-profile-card-title">
-
               <div>
                 <span>PERSONAL DETAILS</span>
                 <h2>Basic Information</h2>
               </div>
 
               <UserRound size={19} />
-
             </div>
 
             <div className="edit-form-grid">
 
-              {/* Full Name */}
+              {/* First Name */}
 
               <div className="edit-form-group">
-
                 <label>
-                  Full Name
+                  First Name
                 </label>
 
                 <div className="edit-input-wrap">
-
                   <UserRound size={16} />
 
                   <input
-                    id="profile-name"
+                    name="firstName"
                     type="text"
-                    defaultValue={
-                      displayName
-                    }
-                    placeholder="Enter your full name"
+                    value={form.firstName}
+                    onChange={handleChange}
+                    placeholder="Enter first name"
+                    autoComplete="given-name"
                   />
-
                 </div>
+              </div>
 
+              {/* Last Name */}
+
+              <div className="edit-form-group">
+                <label>
+                  Last Name
+                </label>
+
+                <div className="edit-input-wrap">
+                  <UserRound size={16} />
+
+                  <input
+                    name="lastName"
+                    type="text"
+                    value={form.lastName}
+                    onChange={handleChange}
+                    placeholder="Enter last name"
+                    autoComplete="family-name"
+                  />
+                </div>
               </div>
 
               {/* Email */}
 
               <div className="edit-form-group">
-
                 <label>
                   Email Address
                 </label>
 
                 <div className="edit-input-wrap">
-
                   <Mail size={16} />
 
                   <input
                     type="email"
-                    defaultValue={
-                      profile?.email ||
-                      "your@email.com"
-                    }
-                    placeholder="Enter your email"
+                    value={profile?.email || ""}
+                    placeholder="Your email"
                     disabled
                     readOnly
                   />
-
                 </div>
 
                 <small>
                   Your email is used for important
                   account notifications.
                 </small>
-
               </div>
 
               {/* Phone */}
 
               <div className="edit-form-group">
-
                 <label>
                   Mobile Number
                 </label>
 
                 <div className="edit-input-wrap">
-
                   <Phone size={16} />
 
                   <input
-                    id="profile-phone"
+                    name="phone"
                     type="tel"
-                    defaultValue={
-                      profile?.phone || ""
-                    }
+                    value={form.phone}
+                    onChange={handleChange}
                     placeholder="+91 XXXXX XXXXX"
+                    autoComplete="tel"
                   />
-
                 </div>
-
               </div>
 
               {/* Account Type */}
 
               <div className="edit-form-group">
-
                 <label>
                   Account Type
                 </label>
 
                 <div className="edit-input-wrap">
-
                   <UserRound size={16} />
 
                   <input
                     type="text"
-                    value="Client Account"
+                    value={
+                      profile?.role
+                        ? `${profile.role}`
+                        : "Client Account"
+                    }
                     disabled
                     readOnly
                   />
-
                 </div>
 
                 <small>
                   Account type cannot be changed.
                 </small>
-
               </div>
 
-            </div>
-
-          </section>
-
-          {/* ===================================================
-              BUSINESS
-          =================================================== */}
-
-          <section className="edit-profile-card">
-
-            <div className="edit-profile-card-title">
-
-              <div>
-                <span>BUSINESS DETAILS</span>
-                <h2>Business Information</h2>
-              </div>
-
-            </div>
-
-            <div className="edit-form-grid">
-
-              {/* Business */}
+              {/* Date of Birth */}
 
               <div className="edit-form-group">
-
                 <label>
-                  Business / Organization
+                  Date of Birth
                 </label>
 
                 <input
-                  id="business-name"
-                  type="text"
-                  defaultValue={
-                    profile?.businessName || ""
-                  }
-                  placeholder="Enter business name"
+                  name="dateOfBirth"
+                  type="date"
+                  value={form.dateOfBirth}
+                  onChange={handleChange}
                 />
-
-              </div>
-
-              {/* PAN */}
-
-              <div className="edit-form-group">
-
-                <label>
-                  PAN
-                </label>
-
-                <input
-                  id="profile-pan"
-                  type="text"
-                  defaultValue={
-                    profile?.pan || ""
-                  }
-                  placeholder="Enter PAN"
-                  maxLength="10"
-                  style={{
-                    textTransform: "uppercase",
-                  }}
-                />
-
-              </div>
-
-              {/* GSTIN */}
-
-              <div className="edit-form-group">
-
-                <label>
-                  GSTIN
-                </label>
-
-                <input
-                  id="profile-gstin"
-                  type="text"
-                  defaultValue={
-                    profile?.gstin || ""
-                  }
-                  placeholder="Enter GSTIN"
-                  maxLength="15"
-                  style={{
-                    textTransform: "uppercase",
-                  }}
-                />
-
               </div>
 
               {/* Address */}
 
               <div className="edit-form-group">
-
                 <label>
-                  Business Address
+                  Address
                 </label>
 
                 <input
-                  id="business-address"
+                  name="addressLine1"
                   type="text"
-                  defaultValue={
-                    profile?.businessAddress ||
-                    ""
-                  }
-                  placeholder="Enter business address"
+                  value={form.addressLine1}
+                  onChange={handleChange}
+                  placeholder="Address line 1"
                 />
-
               </div>
 
+              <div className="edit-form-group">
+                <label>
+                  Address Line 2
+                </label>
+
+                <input
+                  name="addressLine2"
+                  type="text"
+                  value={form.addressLine2}
+                  onChange={handleChange}
+                  placeholder="Address line 2"
+                />
+              </div>
+
+              {/* City */}
+
+              <div className="edit-form-group">
+                <label>
+                  City
+                </label>
+
+                <input
+                  name="city"
+                  type="text"
+                  value={form.city}
+                  onChange={handleChange}
+                  placeholder="Enter city"
+                />
+              </div>
+
+              {/* State */}
+
+              <div className="edit-form-group">
+                <label>
+                  State
+                </label>
+
+                <input
+                  name="state"
+                  type="text"
+                  value={form.state}
+                  onChange={handleChange}
+                  placeholder="Enter state"
+                />
+              </div>
+
+              {/* Postal Code */}
+
+              <div className="edit-form-group">
+                <label>
+                  Postal Code
+                </label>
+
+                <input
+                  name="postalCode"
+                  type="text"
+                  value={form.postalCode}
+                  onChange={handleChange}
+                  placeholder="Enter postal code"
+                />
+              </div>
+
+              {/* Country */}
+
+              <div className="edit-form-group">
+                <label>
+                  Country
+                </label>
+
+                <input
+                  name="country"
+                  type="text"
+                  value={form.country}
+                  onChange={handleChange}
+                  placeholder="Country"
+                />
+              </div>
+
+            </div>
+          </section>
+
+          {/* ===================================================
+              BIO
+          =================================================== */}
+
+          <section className="edit-profile-card">
+
+            <div className="edit-profile-card-title">
+              <div>
+                <span>ABOUT YOU</span>
+                <h2>Profile Bio</h2>
+              </div>
+            </div>
+
+            <div className="edit-form-group">
+              <label>
+                Bio
+              </label>
+
+              <textarea
+                name="bio"
+                value={form.bio}
+                onChange={handleChange}
+                placeholder="Tell us something about yourself..."
+                rows={5}
+              />
             </div>
 
           </section>
@@ -870,9 +926,8 @@ function EditProfile() {
             <button
               type="submit"
               className="save-profile-btn"
-              disabled={saving}
+              disabled={saving || loadingProfile}
             >
-
               {saving ? (
                 <>
                   Saving...
@@ -887,13 +942,11 @@ function EditProfile() {
                   Save Changes
                 </>
               )}
-
             </button>
 
           </div>
 
         </form>
-
       </div>
     </main>
   );
