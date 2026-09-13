@@ -417,7 +417,7 @@ const profilePhoto = profile?.avatarPath || "";
   <strong>{displayName}</strong>
   <span>Client Account</span>
 </div>
-
+</div>
               <Link to="/dashboard" onClick={closeMenu}>
                 <LayoutDashboard size={17} />
                 Dashboard
