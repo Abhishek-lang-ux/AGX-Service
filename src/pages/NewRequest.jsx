@@ -879,7 +879,7 @@ const [paymentScreenshot, setPaymentScreenshot] = useState(null);
 
         <div className="payment-qr-box">
           <img
-            src="/payment-qr.png"
+            src="/QRcode.jpeg"
             alt="AGX Payment QR Code"
           />
         </div>
@@ -896,27 +896,27 @@ const [paymentScreenshot, setPaymentScreenshot] = useState(null);
 
         <div className="payment-bank-row">
           <small>Account Holder</small>
-          <strong>AGX Software Services</strong>
+          <strong>AGX MULTIVERSE</strong>
         </div>
 
         <div className="payment-bank-row">
           <small>Bank</small>
-          <strong>HDFC Bank</strong>
+          <strong>Bank of Baroda</strong>
         </div>
 
         <div className="payment-bank-row">
           <small>Account Number</small>
-          <strong>XXXXXXXXXXXX</strong>
+          <strong>45030200000551</strong>
         </div>
 
         <div className="payment-bank-row">
           <small>IFSC</small>
-          <strong>HDFC0000000</strong>
+          <strong>BARKB0MOHLAK</strong>
         </div>
 
         <div className="payment-bank-row">
           <small>UPI ID</small>
-          <strong>agxservices@upi</strong>
+          <strong>agxmu70547551@barodampay</strong>
         </div>
       </div>
     </div>
