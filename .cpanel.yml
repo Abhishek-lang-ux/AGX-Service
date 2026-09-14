@@ -1,6 +1,4 @@
 deployment:
   tasks:
     - export DEPLOYPATH=/home/agxservice/public_html/
-    - cd /home/agxservice/agx-service-frontened && /home/agxservice/nodevenv/public_html/api.agxservice.work.gd/24/bin/npm install --include=dev
-    - cd /home/agxservice/agx-service-frontened && /home/agxservice/nodevenv/public_html/api.agxservice.work.gd/24/bin/npm run build
     - /bin/cp -R /home/agxservice/agx-service-frontened/dist/* $DEPLOYPATH
