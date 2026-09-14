@@ -1,4 +1,4 @@
 deployment:
   tasks:
     - export DEPLOYPATH=/home/agxservice/public_html/
-    - /bin/cp -R /home/agxservice/agx-service-frontened/dist/* $DEPLOYPATH
+    - /bin/cp -R dist/* $DEPLOYPATH
