@@ -178,7 +178,7 @@ function Dashboard() {
       {profile?.firstName} {profile?.lastName || ""}
     </strong>
 
-    <small>***********************************</small>
+    <small>Client Portal</small>
   </span>
 </Link>
           </div>

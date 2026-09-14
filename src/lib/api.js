@@ -1,7 +1,7 @@
 const API_BASE_URL =
   import.meta.env.VITE_API_URL ||
   (import.meta.env.PROD
-    ? "https://agx-service-backend.onrender.com/api"
+    ? "https://api.agxservice.work.gd/api"
     : "http://localhost:5000/api");
 
 export function normalizeAssetUrl(value) {
