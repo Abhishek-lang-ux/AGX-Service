@@ -14,47 +14,81 @@ import {
   FileCheck2,
   ShieldCheck,
   CheckCircle2,
+  ShoppingCart,
+  Smartphone,
+  FileText,
+  BriefcaseBusiness,
+  BadgeIndianRupee,
   X,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const fallbackServices = [
   {
-    id: "pan",
-    title: "PAN Card Services",
-    category: "Documents",
+    id: "website-development",
+    title: "Website Development",
+    category: "Digital",
     description:
-      "Apply for a new PAN, correction, reprint and other PAN-related assistance.",
-    icon: CreditCard,
-    iconClass: "blue",
+      "Professional, responsive and modern websites for businesses, professionals, startups and personal brands.",
+    icon: Code2,
+    iconClass: "pink",
     popular: true,
     features: [
-      "New PAN application",
-      "PAN correction",
-      "PAN reprint assistance",
+      "Business website development",
+      "Responsive mobile design",
+      "Contact forms and integrations",
     ],
   },
   {
-    id: "gst",
-    title: "GST Services",
+    id: "pf-withdrawal",
+    title: "PF Withdrawal Assistance",
+    category: "Documents",
+    description:
+      "Assistance with PF withdrawal, claim submission and applicable EPFO-related processes.",
+    icon: WalletCards,
+    iconClass: "orange",
+    popular: true,
+    features: [
+      "PF withdrawal assistance",
+      "Claim-related support",
+      "EPFO process guidance",
+    ],
+  },
+  {
+    id: "gst-registration",
+    title: "GST Registration",
     category: "Tax & Compliance",
     description:
-      "GST registration, return filing, amendments and other GST-related assistance.",
+      "Assistance with GST registration and the required documentation for businesses.",
     icon: ReceiptText,
     iconClass: "green",
     popular: true,
     features: [
-      "GST registration",
+      "GST registration assistance",
+      "Document preparation",
+      "Application support",
+    ],
+  },
+  {
+    id: "gst-return",
+    title: "GST Return Filing",
+    category: "Tax & Compliance",
+    description:
+      "GST return filing assistance and compliance support for eligible businesses.",
+    icon: ReceiptText,
+    iconClass: "green",
+    features: [
       "GST return filing",
-      "GST amendment assistance",
+      "Return data review",
+      "Compliance assistance",
     ],
   },
   {
     id: "income-tax",
-    title: "Income Tax",
+    title: "Income Tax / ITR Filing",
     category: "Tax & Compliance",
     description:
-      "Income tax return filing assistance and other tax-related professional services.",
+      "Income tax return filing assistance for individuals, professionals and businesses.",
     icon: Calculator,
     iconClass: "purple",
     popular: true,
@@ -65,17 +99,31 @@ const fallbackServices = [
     ],
   },
   {
-    id: "pf",
-    title: "PF Withdrawal",
+    id: "pan-card",
+    title: "PAN Card Services",
     category: "Documents",
     description:
-      "Assistance with PF withdrawal and applicable EPFO-related processes.",
-    icon: WalletCards,
-    iconClass: "orange",
+      "Assistance with new PAN applications, corrections, reprint and related services.",
+    icon: CreditCard,
+    iconClass: "blue",
     features: [
-      "PF withdrawal assistance",
-      "Claim-related support",
-      "EPFO process assistance",
+      "New PAN application",
+      "PAN correction",
+      "PAN reprint assistance",
+    ],
+  },
+  {
+    id: "tds-return",
+    title: "TDS Return Filing",
+    category: "Tax & Compliance",
+    description:
+      "TDS return filing assistance and documentation support for applicable taxpayers.",
+    icon: FileText,
+    iconClass: "purple",
+    features: [
+      "TDS return assistance",
+      "Document review",
+      "Compliance support",
     ],
   },
   {
@@ -83,7 +131,7 @@ const fallbackServices = [
     title: "Accounting Services",
     category: "Business",
     description:
-      "Bookkeeping, accounting assistance and financial support for businesses.",
+      "Bookkeeping, accounting assistance and financial reporting support for businesses.",
     icon: BookOpen,
     iconClass: "cyan",
     features: [
@@ -93,26 +141,11 @@ const fallbackServices = [
     ],
   },
   {
-    id: "software",
-    title: "Software Services",
-    category: "Digital",
-    description:
-      "Professional websites, web applications and custom software solutions.",
-    icon: Code2,
-    iconClass: "pink",
-    popular: true,
-    features: [
-      "Business websites",
-      "E-commerce development",
-      "Custom web applications",
-    ],
-  },
-  {
-    id: "business",
+    id: "business-registration",
     title: "Business Registration",
     category: "Business",
     description:
-      "Assistance with applicable business registration and documentation requirements.",
+      "Assistance with applicable business registration, documentation and application processes.",
     icon: Building2,
     iconClass: "indigo",
     features: [
@@ -122,11 +155,82 @@ const fallbackServices = [
     ],
   },
   {
+    id: "msme-udyam",
+    title: "MSME / Udyam Registration",
+    category: "Business",
+    description:
+      "Assistance with MSME / Udyam registration and the applicable documentation process.",
+    icon: BriefcaseBusiness,
+    iconClass: "indigo",
+    features: [
+      "Udyam registration assistance",
+      "Document guidance",
+      "Application support",
+    ],
+  },
+  {
+    id: "ecommerce",
+    title: "E-commerce Website",
+    category: "Digital",
+    description:
+      "Online store development with product listings, customer flows and payment integrations.",
+    icon: ShoppingCart,
+    iconClass: "pink",
+    popular: true,
+    features: [
+      "Online store development",
+      "Product management",
+      "Payment integration",
+    ],
+  },
+  {
+    id: "web-application",
+    title: "Web Application Development",
+    category: "Digital",
+    description:
+      "Custom web applications designed around your business workflow and requirements.",
+    icon: Code2,
+    iconClass: "pink",
+    features: [
+      "Custom web applications",
+      "Business dashboards",
+      "API integrations",
+    ],
+  },
+  {
+    id: "mobile-app",
+    title: "Mobile App Development",
+    category: "Digital",
+    description:
+      "Custom mobile application development for business and customer-facing requirements.",
+    icon: Smartphone,
+    iconClass: "blue",
+    features: [
+      "Mobile application development",
+      "Business app solutions",
+      "API integration",
+    ],
+  },
+  {
+    id: "dsc",
+    title: "Digital Signature (DSC)",
+    category: "Documents",
+    description:
+      "Assistance with applicable Digital Signature Certificate requirements and processes.",
+    icon: BadgeIndianRupee,
+    iconClass: "teal",
+    features: [
+      "DSC assistance",
+      "Documentation guidance",
+      "Application support",
+    ],
+  },
+  {
     id: "documentation",
     title: "Documentation Services",
     category: "Documents",
     description:
-      "Professional assistance for document preparation, submission and related services.",
+      "Professional assistance with document preparation, review and submission requirements.",
     icon: FileCheck2,
     iconClass: "teal",
     features: [
@@ -145,6 +249,116 @@ const categories = [
   "Digital",
 ];
 
+function normalizeCategory(category) {
+  if (!category) return "Documents";
+
+  if (
+    category === "GST" ||
+    category === "Income Tax" ||
+    category === "Compliance" ||
+    category === "TDS"
+  ) {
+    return "Tax & Compliance";
+  }
+
+  if (
+    category === "Accounting" ||
+    category === "Business"
+  ) {
+    return "Business";
+  }
+
+  if (
+    category === "Digital" ||
+    category === "Software" ||
+    category === "Website"
+  ) {
+    return "Digital";
+  }
+
+  if (category === "Documents") {
+    return "Documents";
+  }
+
+  return category;
+}
+
+function getServiceIcon(service) {
+  const text = `${service.name || ""} ${
+    service.category || ""
+  }`.toLowerCase();
+
+  if (text.includes("website") || text.includes("software")) {
+    return Code2;
+  }
+
+  if (text.includes("pf") || text.includes("provident")) {
+    return WalletCards;
+  }
+
+  if (text.includes("gst")) {
+    return ReceiptText;
+  }
+
+  if (
+    text.includes("income tax") ||
+    text.includes("itr") ||
+    text.includes("tds")
+  ) {
+    return Calculator;
+  }
+
+  if (text.includes("pan")) {
+    return CreditCard;
+  }
+
+  if (text.includes("account")) {
+    return BookOpen;
+  }
+
+  if (
+    text.includes("business") ||
+    text.includes("registration") ||
+    text.includes("udyam") ||
+    text.includes("msme")
+  ) {
+    return Building2;
+  }
+
+  if (
+    text.includes("e-commerce") ||
+    text.includes("ecommerce") ||
+    text.includes("online store")
+  ) {
+    return ShoppingCart;
+  }
+
+  if (text.includes("mobile") || text.includes("app")) {
+    return Smartphone;
+  }
+
+  return FileCheck2;
+}
+
+function getIconClass(category) {
+  switch (category) {
+    case "Tax & Compliance":
+      return "green";
+
+    case "Documents":
+      return "orange";
+
+    case "Business":
+      return "indigo";
+
+    case "Digital":
+      return "pink";
+
+    default:
+      return "blue";
+  }
+}
+
 function Services() {
   const [apiServices, setApiServices] = useState([]);
   const [servicesLoading, setServicesLoading] = useState(true);
@@ -152,30 +366,67 @@ function Services() {
 
   useEffect(() => {
     let active = true;
+
     getServices()
-      .then((data) => active && setApiServices(data.services || []))
-      .catch((error) => active && setServicesError(error.message || "Unable to load services"))
-      .finally(() => active && setServicesLoading(false));
-    return () => { active = false; };
+      .then((data) => {
+        if (!active) return;
+
+        setApiServices(
+          Array.isArray(data?.services) ? data.services : [],
+        );
+      })
+      .catch((error) => {
+        if (!active) return;
+
+        setServicesError(
+          error?.message || "Unable to load services",
+        );
+      })
+      .finally(() => {
+        if (active) {
+          setServicesLoading(false);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
   }, []);
 
-  const [activeCategory, setActiveCategory] = useState("All Services");
+  const [activeCategory, setActiveCategory] =
+    useState("All Services");
+
   const [search, setSearch] = useState("");
-  const [selectedService, setSelectedService] = useState(null);
+
+  const [selectedService, setSelectedService] =
+    useState(null);
 
   const services = useMemo(() => {
-    if (!apiServices.length) return fallbackServices;
+    if (!apiServices.length) {
+      return fallbackServices;
+    }
 
-    return apiServices.map((service) => ({
-      id: service.slug || service.id,
-      title: service.name,
-      category: service.category === "GST" || service.category === "Income Tax" || service.category === "Compliance" ? "Tax & Compliance" : service.category === "Accounting" || service.category === "Business" ? "Business" : service.category,
-      description: service.description || service.shortDescription || "AGX professional service assistance.",
-      icon: service.category === "Accounting" ? BookOpen : service.category === "Business" ? Building2 : ReceiptText,
-      iconClass: "blue",
-      popular: Number(service.displayOrder) <= 2,
-      features: ["Professional assistance", "Document guidance", "Application support"],
-    }));
+    return apiServices.map((service) => {
+      const category = normalizeCategory(service.category);
+
+      return {
+        id: service.slug || service.id || service.name,
+        title: service.name,
+        category,
+        description:
+          service.description ||
+          service.shortDescription ||
+          "AGX professional service assistance.",
+        icon: getServiceIcon(service),
+        iconClass: getIconClass(category),
+        popular: Number(service.displayOrder) <= 2,
+        features: [
+          "Professional assistance",
+          "Document guidance",
+          "Application support",
+        ],
+      };
+    });
   }, [apiServices]);
 
   const filteredServices = useMemo(() => {
@@ -188,9 +439,15 @@ function Services() {
 
       const searchMatch =
         !searchText ||
-        service.title.toLowerCase().includes(searchText) ||
-        service.description.toLowerCase().includes(searchText) ||
-        service.category.toLowerCase().includes(searchText);
+        service.title
+          .toLowerCase()
+          .includes(searchText) ||
+        service.description
+          .toLowerCase()
+          .includes(searchText) ||
+        service.category
+          .toLowerCase()
+          .includes(searchText);
 
       return categoryMatch && searchMatch;
     });
@@ -198,24 +455,37 @@ function Services() {
 
   return (
     <main className="services-page">
-      {servicesLoading && <div className="api-status-banner">Loading live services…</div>}
-      {servicesError && <div className="api-error-banner" role="alert">{servicesError}</div>}
-      {!servicesLoading && !servicesError && apiServices.length > 0 && (
-        <div className="api-status-banner">Live services connected: {apiServices.length}</div>
+      {servicesLoading && (
+        <div className="api-status-banner">
+          Loading live services…
+        </div>
       )}
 
+      {servicesError && (
+        <div
+          className="api-error-banner"
+          role="alert"
+        >
+          {servicesError}
+        </div>
+      )}
 
-      {/* =====================================================
-          HERO
-      ===================================================== */}
+      {!servicesLoading &&
+        !servicesError &&
+        apiServices.length > 0 && (
+          <div className="api-status-banner">
+            Live services connected: {apiServices.length}
+          </div>
+        )}
+
+      {/* HERO */}
 
       <section className="services-hero">
-
         <div className="services-hero-grid"></div>
+
         <div className="services-hero-glow"></div>
 
         <div className="container services-hero-content">
-
           <div className="services-eyebrow">
             <span></span>
             AGX DIGITAL SERVICE PLATFORM
@@ -228,27 +498,28 @@ function Services() {
           </h1>
 
           <p>
-            Choose the service you need, submit your information
-            and documents securely, and let the AGX team handle
-            the applicable process.
+            Choose the service you need, submit your
+            information and documents securely, and let
+            the AGX team handle the applicable process.
           </p>
 
-
-          {/* Search */}
+          {/* SEARCH */}
 
           <div className="service-search">
-
             <Search size={19} />
 
             <input
               type="text"
-              placeholder="Search PAN, GST, Income Tax, Accounting..."
+              placeholder="Search Website, PF, GST, ITR, PAN..."
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) =>
+                setSearch(e.target.value)
+              }
             />
 
             {search && (
-              <button type="button"
+              <button
+                type="button"
                 onClick={() => setSearch("")}
                 className="search-clear"
                 aria-label="Clear search"
@@ -256,14 +527,11 @@ function Services() {
                 <X size={16} />
               </button>
             )}
-
           </div>
 
-
-          {/* Hero mini trust */}
+          {/* TRUST */}
 
           <div className="services-hero-trust">
-
             <div>
               <ShieldCheck size={14} />
               Secure document handling
@@ -278,72 +546,61 @@ function Services() {
               <CheckCircle2 size={14} />
               Simple online process
             </div>
-
           </div>
-
         </div>
-
       </section>
 
-
-      {/* =====================================================
-          SERVICES LIST
-      ===================================================== */}
+      {/* SERVICES LIST */}
 
       <section className="services-list-section">
-
         <div className="container">
-
-          {/* Category navigation */}
+          {/* CATEGORY NAVIGATION */}
 
           <div className="services-toolbar">
-
             <div className="service-filter">
-
               {categories.map((category) => (
-                <button type="button"
+                <button
+                  type="button"
                   key={category}
                   className={
                     activeCategory === category
                       ? "filter-btn active"
                       : "filter-btn"
                   }
-                  onClick={() => setActiveCategory(category)}
+                  onClick={() =>
+                    setActiveCategory(category)
+                  }
                 >
                   {category}
                 </button>
               ))}
-
             </div>
-
           </div>
 
-
-          {/* Results */}
+          {/* RESULTS */}
 
           <div className="service-result-row">
-
             <div>
               Showing{" "}
-              <strong>{filteredServices.length}</strong>{" "}
-              {filteredServices.length === 1 ? "service" : "services"}
+              <strong>
+                {filteredServices.length}
+              </strong>{" "}
+              {filteredServices.length === 1
+                ? "service"
+                : "services"}
             </div>
 
             <span>
-              Select a service to view what AGX can assist with
+              Select a service to view what AGX can
+              assist with
             </span>
-
           </div>
 
-
-          {/* Cards */}
+          {/* CARDS */}
 
           {filteredServices.length > 0 ? (
-
             <div className="services-page-grid">
-
               {filteredServices.map((service) => {
-
                 const Icon = service.icon;
 
                 return (
@@ -351,9 +608,7 @@ function Services() {
                     className="large-service-card"
                     key={service.id}
                   >
-
                     <div className="large-card-top">
-
                       <div
                         className={`large-service-icon ${service.iconClass}`}
                       >
@@ -366,70 +621,67 @@ function Services() {
                         </span>
                       )}
 
-                      <button type="button"
+                      <button
+                        type="button"
                         className="card-arrow"
-                        onClick={() => setSelectedService(service)}
+                        onClick={() =>
+                          setSelectedService(service)
+                        }
                         aria-label={`View ${service.title}`}
                       >
                         <ArrowUpRight size={18} />
                       </button>
-
                     </div>
-
 
                     <div className="service-card-category">
                       {service.category}
                     </div>
 
-
                     <h2>{service.title}</h2>
-
 
                     <p>{service.description}</p>
 
-
                     <div className="service-features">
-
-                      {service.features.map((feature) => (
-                        <div
-                          className="feature-line"
-                          key={feature}
-                        >
-                          <span>✓</span>
-                          {feature}
-                        </div>
-                      ))}
-
+                      {service.features.map(
+                        (feature) => (
+                          <div
+                            className="feature-line"
+                            key={feature}
+                          >
+                            <span>✓</span>
+                            {feature}
+                          </div>
+                        ),
+                      )}
                     </div>
 
-
-                    <button type="button"
+                    <button
+                      type="button"
                       className="service-start-btn"
-                      onClick={() => setSelectedService(service)}
+                      onClick={() =>
+                        setSelectedService(service)
+                      }
                     >
                       View Service
                       <ArrowRight size={16} />
                     </button>
-
                   </article>
                 );
               })}
-
             </div>
-
           ) : (
-
             <div className="no-services">
-
               <Search size={34} />
 
               <h3>No services found</h3>
 
               <p>
-                Try another keyword or select a different category.
+                Try another keyword or select a
+                different category.
               </p>
 
-              <button type="button"
+              <button
+                type="button"
                 onClick={() => {
                   setSearch("");
                   setActiveCategory("All Services");
@@ -437,28 +689,17 @@ function Services() {
               >
                 View All Services
               </button>
-
             </div>
-
           )}
-
         </div>
-
       </section>
 
-
-      {/* =====================================================
-          PROCESS CTA
-      ===================================================== */}
+      {/* PROCESS CTA */}
 
       <section className="services-process-section">
-
         <div className="container">
-
           <div className="services-process-box">
-
             <div className="services-process-content">
-
               <span className="section-label light">
                 SIMPLE SERVICE JOURNEY
               </span>
@@ -466,12 +707,15 @@ function Services() {
               <h2>
                 You submit.
                 <br />
-                <span>AGX handles the journey.</span>
+                <span>
+                  AGX handles the journey.
+                </span>
               </h2>
 
               <p>
-                Choose your service, provide the required information
-                and documents, and track your request through the AGX
+                Choose your service, provide the
+                required information and documents,
+                and track your request through the AGX
                 service experience.
               </p>
 
@@ -482,12 +726,9 @@ function Services() {
                 See How It Works
                 <ArrowRight size={16} />
               </Link>
-
             </div>
 
-
             <div className="mini-process">
-
               <div className="mini-process-item">
                 <strong>01</strong>
                 <span>Select Service</span>
@@ -511,33 +752,24 @@ function Services() {
                 <span>Get Result</span>
                 <small>Track and receive updates</small>
               </div>
-
             </div>
-
           </div>
-
         </div>
-
       </section>
 
-
-      {/* =====================================================
-          SERVICE PREVIEW MODAL
-      ===================================================== */}
+      {/* SERVICE MODAL */}
 
       {selectedService && (
-
         <div
           className="service-modal-overlay"
           onClick={() => setSelectedService(null)}
         >
-
           <div
             className="service-modal"
             onClick={(e) => e.stopPropagation()}
           >
-
-            <button type="button"
+            <button
+              type="button"
               className="modal-close"
               onClick={() => setSelectedService(null)}
               aria-label="Close"
@@ -545,55 +777,48 @@ function Services() {
               <X size={18} />
             </button>
 
-
             <div
               className={`modal-icon ${selectedService.iconClass}`}
             >
               {(() => {
                 const Icon = selectedService.icon;
+
                 return <Icon size={26} />;
               })()}
             </div>
-
 
             <span className="modal-category">
               {selectedService.category}
             </span>
 
-
             <h2>{selectedService.title}</h2>
-
 
             <p>{selectedService.description}</p>
 
-
             <div className="modal-features">
-
-              {selectedService.features.map((feature) => (
-                <div key={feature}>
-                  <span>✓</span>
-                  {feature}
-                </div>
-              ))}
-
+              {selectedService.features.map(
+                (feature) => (
+                  <div key={feature}>
+                    <span>✓</span>
+                    {feature}
+                  </div>
+                ),
+              )}
             </div>
-
 
             <Link
               to="/register"
               className="modal-start-btn"
-              onClick={() => setSelectedService(null)}
+              onClick={() =>
+                setSelectedService(null)
+              }
             >
               Get Started With AGX
               <ArrowRight size={17} />
             </Link>
-
           </div>
-
         </div>
-
       )}
-
     </main>
   );
 }
