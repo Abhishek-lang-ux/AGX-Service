@@ -4,10 +4,9 @@
 
 .dashboard-page {
   min-height: 100vh;
-  background:yellow;
-  /* background:
+  background:
     radial-gradient(circle at 88% 0%, rgba(31, 111, 235, 0.09), transparent 28%),
-    #f5f8fc; */
+    #f5f8fc;
   padding: 42px 0 70px;
 }
 
