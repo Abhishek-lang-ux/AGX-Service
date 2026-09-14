@@ -22,9 +22,9 @@ const contactMethods = [
   {
     icon: Mail,
     label: "Email",
-    value: "contact@agxservices.work.gd",
+    value: "contact@agxservices.online",
     note: "For detailed enquiries",
-    href: "mailto:contact@agxservices.work.gd",
+    href: "mailto:contact@agxservices.online",
   },
   {
     icon: Phone,
