@@ -18,11 +18,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import {
-  createPaymentOrder,
-  createServiceRequest,
   getServices,
+  submitRequestWithPayment,
   uploadRequestDocuments,
-  verifyPayment,
 } from "../lib/api.js";
 
 import "./newRequest.css";
@@ -99,6 +97,8 @@ function NewRequest() {
   const [reference, setReference] = useState("");
   const [consent, setConsent] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState([]);
+  // Manual QR payment state
+const [paymentScreenshot, setPaymentScreenshot] = useState(null);
 
   // Submission state
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -171,12 +171,45 @@ function NewRequest() {
     setConsent(false);
     setSelectedFiles([]);
     setError("");
+    setPaymentScreenshot(null);
   };
 
   const handleFileChange = (event) => {
     const files = Array.from(event.target.files || []);
     setSelectedFiles(files);
   };
+
+  const handlePaymentScreenshotChange = (event) => {
+  const file = event.target.files?.[0] || null;
+
+  if (!file) {
+    setPaymentScreenshot(null);
+    return;
+  }
+
+  const allowedTypes = [
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+  ];
+
+  if (!allowedTypes.includes(file.type)) {
+    setPaymentScreenshot(null);
+    setError("Payment screenshot must be JPG, PNG or WEBP.");
+    event.target.value = "";
+    return;
+  }
+
+  if (file.size > 5 * 1024 * 1024) {
+    setPaymentScreenshot(null);
+    setError("Payment screenshot must be smaller than 5 MB.");
+    event.target.value = "";
+    return;
+  }
+
+  setPaymentScreenshot(file);
+  setError("");
+};
 
   const handleContinueToReview = () => {
     setError("");
@@ -215,9 +248,15 @@ function NewRequest() {
 
   if (!consent) {
     setError(
-      "Please confirm that the information provided is accurate.",
+      "Please confirm that the information provided is accurate."
     );
     setStep(2);
+    return;
+  }
+
+  if (!paymentScreenshot) {
+    setError("Please upload your payment screenshot.");
+    setStep(4);
     return;
   }
 
@@ -225,162 +264,61 @@ function NewRequest() {
   setIsSubmitting(true);
 
   try {
-    const payload = {
+    const response = await submitRequestWithPayment({
       serviceId: Number(selectedService.id),
       serviceSlug: selectedService.slug,
       title: selectedService.title,
       description: requirement.trim(),
       priority: "normal",
-    };
-
-    // STEP 1: Create the request
-    const response = await createServiceRequest(payload);
+      paymentScreenshot,
+    });
 
     if (!response?.success || !response?.request) {
       throw new Error(
-        response?.message || "Unable to create service request.",
+        response?.message ||
+          "Unable to submit payment proof."
       );
     }
 
     const createdRequest = response.request;
 
-    // STEP 2: Upload documents if selected
-    if (selectedFiles.length > 0 && createdRequest.id) {
+    /*
+     * Supporting documents are uploaded only AFTER
+     * the payment-proof submission has successfully
+     * created the request.
+     */
+    if (
+      selectedFiles.length > 0 &&
+      createdRequest.id
+    ) {
       try {
         await uploadRequestDocuments(
           createdRequest.id,
-          selectedFiles,
+          selectedFiles
         );
       } catch (uploadError) {
         console.error(
           "Request created but document upload failed:",
-          uploadError,
+          uploadError
         );
       }
     }
 
-    // STEP 3: Try to create Razorpay order.
-    // If payment is unavailable, the request remains successfully created.
-    try {
-      const orderResponse = await createPaymentOrder(
-        createdRequest.id,
-      );
-
-      if (
-        !orderResponse?.success ||
-        !orderResponse?.order?.id
-      ) {
-        throw new Error(
-          orderResponse?.message ||
-            "Unable to start secure payment.",
-        );
-      }
-
-      // STEP 4: Open Razorpay checkout
-      await openRazorpayCheckout({
-        keyId: orderResponse.keyId,
-        order: orderResponse.order,
-        request: orderResponse.request,
-      });
-
-      return;
-    } catch (paymentError) {
-      console.error(
-        "Request created but payment could not be started:",
-        paymentError,
-      );
-
-      // Request is already saved successfully.
-      // Do not show "Request failed".
-      setError(
-        "Request created successfully. Payment is currently pending and can be completed later.",
-      );
-
-      setTimeout(() => {
-        navigate("/dashboard");
-      }, 1800);
-    }
+    navigate("/myrequests");
   } catch (requestError) {
     console.error(
-      "Create request error:",
-      requestError,
+      "Submit request with payment error:",
+      requestError
     );
 
     setError(
       requestError?.message ||
-        "Something went wrong while creating your request.",
+        "Something went wrong while submitting your payment proof."
     );
   } finally {
     setIsSubmitting(false);
   }
 };
-
-  const openRazorpayCheckout = async ({ keyId, order, request }) => {
-    if (!window.Razorpay) {
-      await new Promise((resolve, reject) => {
-        const existing = document.querySelector('script[data-agx-razorpay="true"]');
-        if (existing) {
-          existing.addEventListener("load", resolve, { once: true });
-          existing.addEventListener("error", reject, { once: true });
-          return;
-        }
-
-        const script = document.createElement("script");
-        script.src = "https://checkout.razorpay.com/v1/checkout.js";
-        script.async = true;
-        script.dataset.agxRazorpay = "true";
-        script.onload = resolve;
-        script.onerror = () => reject(new Error("Razorpay Checkout could not be loaded. Please check your internet connection."));
-        document.body.appendChild(script);
-      });
-    }
-
-    if (!window.Razorpay) {
-      throw new Error("Razorpay Checkout is unavailable. Please try again.");
-    }
-
-    await new Promise((resolve, reject) => {
-      const checkout = new window.Razorpay({
-        key: keyId || import.meta.env.VITE_RAZORPAY_KEY_ID,
-        amount: order.amount,
-        currency: order.currency || "INR",
-        name: "AGX Software Services",
-        description: `${request.serviceName} · ${request.requestNumber}`,
-        order_id: order.id,
-        prefill: {
-          email: "",
-        },
-        theme: { color: "#0f766e" },
-        modal: {
-          ondismiss: () => {
-            setError("Payment window closed. Your request is saved and payment is still pending.");
-            resolve();
-          },
-        },
-        handler: async (paymentResponse) => {
-          try {
-            await verifyPayment({
-              requestId: request.id,
-              razorpay_order_id: paymentResponse.razorpay_order_id,
-              razorpay_payment_id: paymentResponse.razorpay_payment_id,
-              razorpay_signature: paymentResponse.razorpay_signature,
-            });
-
-            resolve();
-            navigate("/payments");
-          } catch (verificationError) {
-            reject(verificationError);
-          }
-        },
-      });
-
-      checkout.on("payment.failed", (response) => {
-        reject(new Error(response?.error?.description || "Razorpay payment failed. Please try again."));
-      });
-
-      checkout.open();
-    });
-  };
 
   return (
     <main className="new-request-page">
@@ -436,6 +374,16 @@ function NewRequest() {
               <span>3</span>
               <small>Review</small>
             </div>
+            <i />
+
+<div
+  className={`request-step ${
+    step >= 4 ? "active" : ""
+  }`}
+>
+  <span>4</span>
+  <small>Payment</small>
+  </div>
           </div>
         </section>
 
@@ -879,23 +827,175 @@ function NewRequest() {
               </button>
 
               <button
-                type="button"
-                className="review-submit"
-                onClick={handleCreateRequest}
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? (
-                  "Creating Request..."
-                ) : (
-                  <>
-                    Create Request
-                    <ArrowRight size={16} />
-                  </>
-                )}
-              </button>
+  type="button"
+  className="review-submit"
+  onClick={() => {
+    setError("");
+    setStep(4);
+  }}
+  disabled={isSubmitting}
+>
+  Continue to Payment
+  <ArrowRight size={16} />
+</button>
             </div>
           </section>
         )}
+
+        {/* =========================
+    STEP 4 · PAYMENT
+========================== */}
+{step === 4 && selectedService && (
+  <section className="request-payment-panel">
+    <div className="review-success-icon">
+      <IndianRupee size={28} />
+    </div>
+
+    <span>STEP 4 · PAYMENT</span>
+
+    <h2>Complete your payment</h2>
+
+    <p>
+      Scan the QR code or use the bank details below to
+      make your payment. After payment, upload the
+      screenshot to submit your request.
+    </p>
+
+    <div className="payment-summary-card">
+      <div>
+        <span>Service</span>
+        <strong>{selectedService.title}</strong>
+      </div>
+
+      <div>
+        <span>Amount Payable</span>
+        <strong>{selectedService.price}</strong>
+      </div>
+    </div>
+
+    <div className="payment-details-layout">
+      <div className="payment-qr-card">
+        <span>SCAN & PAY</span>
+
+        <div className="payment-qr-box">
+          <img
+            src="/payment-qr.png"
+            alt="AGX Payment QR Code"
+          />
+        </div>
+
+        <strong>Scan this QR code to pay</strong>
+
+        <small>
+          Please pay the exact amount shown above.
+        </small>
+      </div>
+
+      <div className="payment-bank-card">
+        <span>BANK / UPI DETAILS</span>
+
+        <div className="payment-bank-row">
+          <small>Account Holder</small>
+          <strong>AGX Software Services</strong>
+        </div>
+
+        <div className="payment-bank-row">
+          <small>Bank</small>
+          <strong>HDFC Bank</strong>
+        </div>
+
+        <div className="payment-bank-row">
+          <small>Account Number</small>
+          <strong>XXXXXXXXXXXX</strong>
+        </div>
+
+        <div className="payment-bank-row">
+          <small>IFSC</small>
+          <strong>HDFC0000000</strong>
+        </div>
+
+        <div className="payment-bank-row">
+          <small>UPI ID</small>
+          <strong>agxservices@upi</strong>
+        </div>
+      </div>
+    </div>
+
+    <div className="payment-upload-card">
+      <div>
+        <strong>Upload Payment Screenshot</strong>
+
+        <p>
+          Upload a clear screenshot of your successful
+          payment. JPG, PNG or WEBP only, maximum 5 MB.
+        </p>
+
+        {paymentScreenshot && (
+          <p>
+            Selected:{" "}
+            <strong>{paymentScreenshot.name}</strong>
+          </p>
+        )}
+      </div>
+
+      <input
+        id="payment-screenshot"
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        hidden
+        onChange={handlePaymentScreenshotChange}
+      />
+
+      <label
+        htmlFor="payment-screenshot"
+        className="payment-upload-button"
+      >
+        {paymentScreenshot
+          ? "Change Screenshot"
+          : "Choose Screenshot"}
+      </label>
+    </div>
+
+    {error && (
+      <div
+        className="request-form-error"
+        role="alert"
+      >
+        {error}
+      </div>
+    )}
+
+    <div className="review-actions">
+      <button
+        type="button"
+        onClick={() => {
+          setStep(3);
+          setError("");
+        }}
+        disabled={isSubmitting}
+      >
+        <ArrowLeft size={16} />
+        Back to Review
+      </button>
+
+      <button
+        type="button"
+        className="review-submit"
+        onClick={handleCreateRequest}
+        disabled={isSubmitting}
+      >
+        {isSubmitting ? (
+          "Submitting Payment Proof..."
+        ) : (
+          <>
+            Submit Payment Proof
+            <CheckCircle2 size={16} />
+          </>
+        )}
+      </button>
+    </div>
+  </section>
+)}
       </div>
     </main>
   );

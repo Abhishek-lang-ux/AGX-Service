@@ -192,6 +192,32 @@ export async function createServiceRequest(payload) {
   });
 }
 
+export async function submitRequestWithPayment({
+  serviceId,
+  serviceSlug,
+  title,
+  description,
+  priority = "normal",
+  paymentScreenshot,
+}) {
+  const formData = new FormData();
+
+  formData.append("serviceId", String(serviceId));
+  formData.append("serviceSlug", serviceSlug || "");
+  formData.append("title", title || "");
+  formData.append("description", description || "");
+  formData.append("priority", priority);
+
+  if (paymentScreenshot) {
+    formData.append("paymentScreenshot", paymentScreenshot);
+  }
+
+  return apiRequest("/requests/submit-with-payment", {
+    method: "POST",
+    body: formData,
+  });
+}
+
 /* =========================================================
    PAYMENTS / RAZORPAY
 ========================================================= */
