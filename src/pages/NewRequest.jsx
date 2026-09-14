@@ -202,83 +202,118 @@ function NewRequest() {
   };
 
   const handleCreateRequest = async () => {
-    if (!selectedService) {
-      setError("Please select a service first.");
-      return;
-    }
+  if (!selectedService) {
+    setError("Please select a service first.");
+    return;
+  }
 
-    if (!requirement.trim()) {
-      setError("Please enter your requirement.");
-      setStep(2);
-      return;
-    }
+  if (!requirement.trim()) {
+    setError("Please enter your requirement.");
+    setStep(2);
+    return;
+  }
 
-    if (!consent) {
-      setError(
-        "Please confirm that the information provided is accurate."
+  if (!consent) {
+    setError(
+      "Please confirm that the information provided is accurate.",
+    );
+    setStep(2);
+    return;
+  }
+
+  setError("");
+  setIsSubmitting(true);
+
+  try {
+    const payload = {
+      serviceId: Number(selectedService.id),
+      serviceSlug: selectedService.slug,
+      title: selectedService.title,
+      description: requirement.trim(),
+      priority: "normal",
+    };
+
+    // STEP 1: Create the request
+    const response = await createServiceRequest(payload);
+
+    if (!response?.success || !response?.request) {
+      throw new Error(
+        response?.message || "Unable to create service request.",
       );
-      setStep(2);
-      return;
     }
 
-    setError("");
-    setIsSubmitting(true);
+    const createdRequest = response.request;
 
+    // STEP 2: Upload documents if selected
+    if (selectedFiles.length > 0 && createdRequest.id) {
+      try {
+        await uploadRequestDocuments(
+          createdRequest.id,
+          selectedFiles,
+        );
+      } catch (uploadError) {
+        console.error(
+          "Request created but document upload failed:",
+          uploadError,
+        );
+      }
+    }
+
+    // STEP 3: Try to create Razorpay order.
+    // If payment is unavailable, the request remains successfully created.
     try {
-      // Payload exactly according to request.controller.js
-      const payload = {
-        // Send both IDs for backward compatibility. Backend resolves by slug
-        // first so different database auto-increment IDs cannot break requests.
-        serviceId: Number(selectedService.id),
-        serviceSlug: selectedService.slug,
-        title: selectedService.title,
-        description: requirement.trim(),
-        priority: "normal",
-      };
+      const orderResponse = await createPaymentOrder(
+        createdRequest.id,
+      );
 
-      const response = await createServiceRequest(payload);
-
-      if (!response?.success || !response?.request) {
+      if (
+        !orderResponse?.success ||
+        !orderResponse?.order?.id
+      ) {
         throw new Error(
-          response?.message || "Unable to create service request."
+          orderResponse?.message ||
+            "Unable to start secure payment.",
         );
       }
 
-      const createdRequest = response.request;
-
-      // Upload documents after request creation, if any were selected.
-      if (selectedFiles.length > 0 && createdRequest.id) {
-        try {
-          await uploadRequestDocuments(createdRequest.id, selectedFiles);
-        } catch (uploadError) {
-          console.error("Request created but document upload failed:", uploadError);
-        }
-      }
-
-      // Create the Razorpay order on the server. The amount is always taken
-      // from the database-backed service/request, never from the browser.
-      const orderResponse = await createPaymentOrder(createdRequest.id);
-
-      if (!orderResponse?.success || !orderResponse?.order?.id) {
-        throw new Error(orderResponse?.message || "Unable to start secure payment.");
-      }
-
+      // STEP 4: Open Razorpay checkout
       await openRazorpayCheckout({
         keyId: orderResponse.keyId,
         order: orderResponse.order,
         request: orderResponse.request,
       });
-    } catch (requestError) {
-      console.error("Create request error:", requestError);
 
-      setError(
-        requestError?.message ||
-          "Something went wrong while creating your request."
+      return;
+    } catch (paymentError) {
+      console.error(
+        "Request created but payment could not be started:",
+        paymentError,
       );
-    } finally {
-      setIsSubmitting(false);
+
+      // Request is already saved successfully.
+      // Do not show "Request failed".
+      setError(
+        "Request created successfully. Payment is currently pending and can be completed later.",
+      );
+
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1800);
     }
-  };
+  } catch (requestError) {
+    console.error(
+      "Create request error:",
+      requestError,
+    );
+
+    setError(
+      requestError?.message ||
+        "Something went wrong while creating your request.",
+    );
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   const openRazorpayCheckout = async ({ keyId, order, request }) => {
     if (!window.Razorpay) {
