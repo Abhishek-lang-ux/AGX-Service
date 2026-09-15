@@ -1,3 +1,8 @@
+.logout-modal-overlay,
+.logout-modal-overlay * {
+  box-sizing: border-box;
+}
+
 .logout-modal-overlay {
   position: fixed;
   inset: 0;
@@ -211,10 +216,19 @@
 @media (max-width: 480px) {
   .logout-modal-overlay {
     padding: 15px;
-    align-items: flex-end;
+    align-items: center;
+    justify-content: center;
+    min-height: 100dvh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .logout-modal {
+    width: 100%;
+    max-width: 430px;
+    max-height: calc(100dvh - 30px);
+    overflow-y: auto;
+    box-sizing: border-box;
     border-radius: 20px;
     padding: 25px 20px 20px;
   }
