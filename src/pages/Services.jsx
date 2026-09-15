@@ -323,26 +323,39 @@ function Services() {
     }
 
     return apiServices.map((service) => {
-      const category = normalizeCategory(service.category);
+  const category = normalizeCategory(service.category);
+  const amount = Number(service.basePrice) || 0;
 
-      return {
-        id: service.slug || service.id || service.name,
-        title: service.name,
-        category,
-        description:
-          service.description ||
-          service.shortDescription ||
-          "AGX professional service assistance.",
-        icon: getServiceIcon(service),
-        iconClass: getIconClass(category),
-        popular: Number(service.displayOrder) <= 2,
-        features: [
-          "Professional assistance",
-          "Document guidance",
-          "Application support",
-        ],
-      };
-    });
+  return {
+    id: service.slug || service.id || service.name,
+    title: service.name,
+    category,
+
+    description:
+      service.description ||
+      service.shortDescription ||
+      "AGX professional service assistance.",
+
+    price: new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      maximumFractionDigits: 0,
+    }).format(amount),
+
+    amount,
+
+    icon: getServiceIcon(service),
+    iconClass: getIconClass(category),
+
+    popular: Number(service.displayOrder) <= 2,
+
+    features: [
+      "Professional assistance",
+      "Document guidance",
+      "Application support",
+    ],
+  };
+});
   }, [apiServices]);
 
   const filteredServices = useMemo(() => {
@@ -556,6 +569,11 @@ function Services() {
                     <h2>{service.title}</h2>
 
                     <p>{service.description}</p>
+
+                    <div className="service-card-price">
+  <span>Starting from</span>
+  <strong>{service.price}</strong>
+</div>
 
                     <div className="service-features">
                       {service.features.map(

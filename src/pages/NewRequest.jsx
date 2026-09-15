@@ -72,9 +72,125 @@ function formatServicePrice(amount) {
 
 
 const fallbackServices = [
-  { id: 1, slug: "gst-registration", title: "GST Registration", category: "business", description: "Complete GST registration assistance.", price: "₹1999", amount: 1999, popular: true },
-  { id: 2, slug: "income-tax-return", title: "Income Tax Return", category: "tax", description: "Professional ITR preparation and filing.", price: "₹599", amount: 599, popular: true },
-  { id: 3, slug: "accounting-bookkeeping", title: "Accounting & Bookkeeping", category: "accounting", description: "Monthly accounting, bookkeeping and GST filing support.", price: "₹499", amount: 499, popular: false },
+  {
+    id: 1,
+    slug: "gst-registration",
+    title: "GST Registration",
+    category: "business",
+    description: "Complete GST registration assistance.",
+    price: "₹1,999",
+    amount: 1999,
+    popular: true,
+  },
+  {
+    id: 2,
+    slug: "income-tax-return",
+    title: "Income Tax Return",
+    category: "tax",
+    description: "Professional ITR preparation and filing.",
+    price: "₹599",
+    amount: 599,
+    popular: true,
+  },
+  {
+    id: 3,
+    slug: "accounting-bookkeeping",
+    title: "Accounting & Bookkeeping",
+    category: "accounting",
+    description:
+      "Monthly accounting, bookkeeping and GST Filing support.",
+    price: "₹499",
+    amount: 499,
+    popular: false,
+  },
+  {
+    id: 4,
+    slug: "project-report",
+    title: "Project Report",
+    category: "business",
+    description:
+      "Professional project report preparation assistance.",
+    price: "₹1,999",
+    amount: 1999,
+    popular: false,
+  },
+  {
+    id: 5,
+    slug: "balance-sheet",
+    title: "Balance Sheet",
+    category: "accounting",
+    description:
+      "Professional balance sheet preparation assistance.",
+    price: "₹1,999",
+    amount: 1999,
+    popular: false,
+  },
+  {
+    id: 6,
+    slug: "aadhaar-pan-link",
+    title: "Aadhaar + PAN Link",
+    category: "documents",
+    description:
+      "Assistance with linking Aadhaar with PAN.",
+    price: "₹1,099",
+    amount: 1099,
+    popular: false,
+  },
+  {
+    id: 7,
+    slug: "website-development",
+    title: "Website Development",
+    category: "digital",
+    description:
+      "Professional website development for businesses and professionals.",
+    price: "₹6,999",
+    amount: 6999,
+    popular: false,
+  },
+  {
+    id: 8,
+    slug: "pf-withdrawal",
+    title: "PF Withdrawal Assistance",
+    category: "documents",
+    description:
+      "Assistance with PF withdrawal and applicable EPFO processes.",
+    price: "₹199",
+    amount: 199,
+    popular: false,
+  },
+  {
+    id: 9,
+    slug: "pvc-aadhaar-card",
+    title: "PVC Aadhaar Card",
+    category: "documents",
+    description:
+      "Assistance with PVC Aadhaar card application.",
+    price: "₹99",
+    amount: 99,
+    popular: false,
+  },
+  {
+    id: 10,
+    slug: "pan-card-services",
+    title: "PAN Card Services",
+    category: "documents",
+    description:
+      "PAN application, correction and reprint assistance.",
+    price: "₹179",
+    amount: 179,
+    popular: false,
+  },
+  {
+    id: 11,
+    slug: "ebill-website-development",
+    title: "E-Bill Website Development",
+    category: "digital",
+    description:
+      "Professional e-bill and billing website development.",
+    price: "₹9,999",
+    amount: 9999,
+    popular: false,
+  },
 ];
 
 function NewRequest() {
