@@ -74,79 +74,84 @@ function AppLayout() {
 
         <Route element={<ProtectedRoute />}>
 
-          <Route
-            path="/dashboard"
-            element={<Dashboard />}
-          />
+        <Route
+          path="/dashboard"
+          element={<Dashboard />}
+        />
 
-          <Route
-            path="/myrequests"
-            element={<MyRequests />}
-          />
+        <Route
+          path="/myrequests"
+          element={<MyRequests />}
+        />
 
-          <Route
-            path="/request-details"
-            element={<RequestDetails />}
-          />
+        <Route
+          path="/request-details"
+          element={<RequestDetails />}
+        />
 
-          <Route
-            path="/documents"
-            element={<Documents />}
-          />
+        <Route
+          path="/documents"
+          element={<Documents />}
+        />
 
-          <Route
-            path="/new-request"
-            element={<NewRequest />}
-          />
+        <Route
+          path="/new-request"
+          element={<NewRequest />}
+        />
 
-          <Route
-            path="/payments"
-            element={<Payments />}
-          />
+        <Route
+          path="/payments"
+          element={<Payments />}
+        />
 
-          <Route
-            path="/profile"
-            element={<Profile />}
-          />
+        <Route
+          path="/profile"
+          element={<Profile />}
+        />
 
-          <Route
-            path="/profile/edit"
-            element={<EditProfile />}
-          />
+        <Route
+          path="/profile/edit"
+          element={<EditProfile />}
+        />
 
-          <Route
-            path="/settings"
-            element={<AccountSettings />}
-          />
+        <Route
+          path="/settings"
+          element={<AccountSettings />}
+        />
 
-          <Route
-            path="/change-password"
-            element={<ChangePassword />}
-          />
+        <Route
+          path="/change-password"
+          element={<ChangePassword />}
+        />
 
-          <Route
-            path="/two-factor-auth"
-            element={<TwoFactorAuth />}
-          />
+        <Route
+          path="/two-factor-auth"
+          element={<TwoFactorAuth />}
+        />
 
-          <Route
-            path="/active-sessions"
-            element={<ActiveSessions />}
-          />
+        <Route
+          path="/active-sessions"
+          element={<ActiveSessions />}
+        />
 
-          <Route
-            path="/notifications"
-            element={<Notifications />}
-          />
+        <Route
+          path="/notifications"
+          element={<Notifications />}
+        />
 
-          <Route element={<SuperAdminRoute />}>
-  <Route
-    path="/superadmin"
-    element={<SuperAdminDashboard />}
-  />
-</Route>
+      </Route>
 
-        </Route>
+
+      {/* =========================
+          SUPERADMIN
+      ========================= */}
+
+      <Route element={<SuperAdminRoute />}>
+        <Route
+          path="/superadmin"
+          element={<SuperAdminDashboard />}
+        />
+      </Route>
 
 
         {/* =========================
