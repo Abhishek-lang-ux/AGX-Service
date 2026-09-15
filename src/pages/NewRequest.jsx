@@ -72,12 +72,9 @@ function formatServicePrice(amount) {
 
 
 const fallbackServices = [
-  { id: 1, slug: "gst-registration", title: "GST Registration", category: "business", description: "Complete GST registration assistance.", price: "₹999", amount: 999, popular: true },
-  { id: 2, slug: "income-tax-return", title: "Income Tax Return", category: "tax", description: "Professional ITR preparation and filing.", price: "₹799", amount: 799, popular: true },
-  { id: 3, slug: "accounting-bookkeeping", title: "Accounting & Bookkeeping", category: "accounting", description: "Monthly accounting and bookkeeping support.", price: "₹1,499", amount: 1499, popular: false },
-  { id: 4, slug: "tax-consultation", title: "Tax Consultation", category: "consultation", description: "Personalized tax planning and consultation.", price: "₹499", amount: 499, popular: false },
-  { id: 5, slug: "business-registration", title: "Business Registration", category: "business", description: "Assistance with business registration.", price: "₹1,999", amount: 1999, popular: false },
-  { id: 6, slug: "tds-compliance", title: "TDS & Compliance", category: "compliance", description: "TDS return and compliance assistance.", price: "₹999", amount: 999, popular: false },
+  { id: 1, slug: "gst-registration", title: "GST Registration", category: "business", description: "Complete GST registration assistance.", price: "₹1999", amount: 1999, popular: true },
+  { id: 2, slug: "income-tax-return", title: "Income Tax Return", category: "tax", description: "Professional ITR preparation and filing.", price: "₹599", amount: 599, popular: true },
+  { id: 3, slug: "accounting-bookkeeping", title: "Accounting & Bookkeeping", category: "accounting", description: "Monthly accounting, bookkeeping and GST filing support.", price: "₹499", amount: 499, popular: false },
 ];
 
 function NewRequest() {

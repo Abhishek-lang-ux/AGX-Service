@@ -113,20 +113,6 @@ const fallbackServices = [
     ],
   },
   {
-    id: "tds-return",
-    title: "TDS Return Filing",
-    category: "Tax & Compliance",
-    description:
-      "TDS return filing assistance and documentation support for applicable taxpayers.",
-    icon: FileText,
-    iconClass: "purple",
-    features: [
-      "TDS return assistance",
-      "Document review",
-      "Compliance support",
-    ],
-  },
-  {
     id: "accounting",
     title: "Accounting Services",
     category: "Business",
@@ -138,20 +124,6 @@ const fallbackServices = [
       "Bookkeeping",
       "Business accounting",
       "Financial reports",
-    ],
-  },
-  {
-    id: "business-registration",
-    title: "Business Registration",
-    category: "Business",
-    description:
-      "Assistance with applicable business registration, documentation and application processes.",
-    icon: Building2,
-    iconClass: "indigo",
-    features: [
-      "Business registration assistance",
-      "Documentation support",
-      "Process guidance",
     ],
   },
   {
@@ -181,62 +153,6 @@ const fallbackServices = [
       "Online store development",
       "Product management",
       "Payment integration",
-    ],
-  },
-  {
-    id: "web-application",
-    title: "Web Application Development",
-    category: "Digital",
-    description:
-      "Custom web applications designed around your business workflow and requirements.",
-    icon: Code2,
-    iconClass: "pink",
-    features: [
-      "Custom web applications",
-      "Business dashboards",
-      "API integrations",
-    ],
-  },
-  {
-    id: "mobile-app",
-    title: "Mobile App Development",
-    category: "Digital",
-    description:
-      "Custom mobile application development for business and customer-facing requirements.",
-    icon: Smartphone,
-    iconClass: "blue",
-    features: [
-      "Mobile application development",
-      "Business app solutions",
-      "API integration",
-    ],
-  },
-  {
-    id: "dsc",
-    title: "Digital Signature (DSC)",
-    category: "Documents",
-    description:
-      "Assistance with applicable Digital Signature Certificate requirements and processes.",
-    icon: BadgeIndianRupee,
-    iconClass: "teal",
-    features: [
-      "DSC assistance",
-      "Documentation guidance",
-      "Application support",
-    ],
-  },
-  {
-    id: "documentation",
-    title: "Documentation Services",
-    category: "Documents",
-    description:
-      "Professional assistance with document preparation, review and submission requirements.",
-    icon: FileCheck2,
-    iconClass: "teal",
-    features: [
-      "Document preparation",
-      "Document review",
-      "Submission assistance",
     ],
   },
 ];
