@@ -18,6 +18,16 @@ import Dashboard from "./pages/Dashboard";
 import MyRequests from "./pages/MyRequests";
 import RequestDetails from "./pages/RequestDetails";
 import SuperAdminDashboard from "./pages/SuperAdminDashboard";
+import SuperAdminLayout from "./components/SuperAdminLayout";
+
+import SuperAdminUsers from "./pages/SuperAdminUsers";
+import SuperAdminStaff from "./pages/SuperAdminStaff";
+import SuperAdminServices from "./pages/SuperAdminServices";
+import SuperAdminRequests from "./pages/SuperAdminRequests";
+import SuperAdminDocuments from "./pages/SuperAdminDocuments";
+import SuperAdminPayments from "./pages/SuperAdminPayments";
+import SuperAdminNotifications from "./pages/SuperAdminNotifications";
+import SuperAdminSettings from "./pages/SuperAdminSettings";
 import Documents from "./pages/Documents";
 import NewRequest from "./pages/NewRequest";
 import Payments from "./pages/Payments";
@@ -147,11 +157,55 @@ function AppLayout() {
       ========================= */}
 
       <Route element={<SuperAdminRoute />}>
-        <Route
-          path="/superadmin"
-          element={<SuperAdminDashboard />}
-        />
-      </Route>
+  <Route element={<SuperAdminLayout />}>
+
+    <Route
+      path="/superadmin"
+      element={<SuperAdminDashboard />}
+    />
+
+    <Route
+      path="/superadmin/users"
+      element={<SuperAdminUsers />}
+    />
+
+    <Route
+      path="/superadmin/staff"
+      element={<SuperAdminStaff />}
+    />
+
+    <Route
+      path="/superadmin/services"
+      element={<SuperAdminServices />}
+    />
+
+    <Route
+      path="/superadmin/requests"
+      element={<SuperAdminRequests />}
+    />
+
+    <Route
+      path="/superadmin/documents"
+      element={<SuperAdminDocuments />}
+    />
+
+    <Route
+      path="/superadmin/payments"
+      element={<SuperAdminPayments />}
+    />
+
+    <Route
+      path="/superadmin/notifications"
+      element={<SuperAdminNotifications />}
+    />
+
+    <Route
+      path="/superadmin/settings"
+      element={<SuperAdminSettings />}
+    />
+
+  </Route>
+</Route>
 
 
         {/* =========================
