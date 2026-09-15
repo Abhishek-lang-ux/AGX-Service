@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
+import SuperAdminRoute from "./components/SuperAdminRoute";
 
 import Home from "./pages/Home";
 import Services from "./pages/Services";
@@ -16,6 +17,7 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import MyRequests from "./pages/MyRequests";
 import RequestDetails from "./pages/RequestDetails";
+import SuperAdminDashboard from "./pages/SuperAdminDashboard";
 import Documents from "./pages/Documents";
 import NewRequest from "./pages/NewRequest";
 import Payments from "./pages/Payments";
@@ -35,8 +37,9 @@ function AppLayout() {
   const location = useLocation();
 
   const hideNavbarFooter =
-    location.pathname === "/login" ||
-    location.pathname === "/register";
+  location.pathname === "/login" ||
+  location.pathname === "/register" ||
+  location.pathname.startsWith("/superadmin");
 
   return (
     <>
@@ -135,6 +138,13 @@ function AppLayout() {
             path="/notifications"
             element={<Notifications />}
           />
+
+          <Route element={<SuperAdminRoute />}>
+  <Route
+    path="/superadmin"
+    element={<SuperAdminDashboard />}
+  />
+</Route>
 
         </Route>
 

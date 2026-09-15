@@ -333,3 +333,11 @@ export async function deleteNotification(id) {
 export async function getDashboard() {
   return apiRequest("/dashboard");
 }
+
+/* =========================================================
+   SUPERADMIN
+========================================================= */
+
+export async function getSuperAdminDashboard() {
+  return apiRequest("/superadmin/dashboard");
+}
