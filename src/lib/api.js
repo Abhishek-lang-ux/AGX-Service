@@ -341,3 +341,64 @@ export async function getDashboard() {
 export async function getSuperAdminDashboard() {
   return apiRequest("/superadmin/dashboard");
 }
+
+/* =========================================================
+   SUPERADMIN USERS
+========================================================= */
+
+export async function getSuperAdminUsers({
+  search = "",
+  role = "",
+  status = "",
+  page = 1,
+  limit = 20,
+} = {}) {
+  const params = new URLSearchParams();
+
+  if (search.trim()) {
+    params.set("search", search.trim());
+  }
+
+  if (role) {
+    params.set("role", role);
+  }
+
+  if (status) {
+    params.set("status", status);
+  }
+
+  params.set("page", String(page));
+  params.set("limit", String(limit));
+
+  return apiRequest(
+    `/superadmin/users?${params.toString()}`,
+  );
+}
+
+
+export async function updateSuperAdminUserStatus(
+  userId,
+  status,
+) {
+  return apiRequest(
+    `/superadmin/users/${encodeURIComponent(userId)}/status`,
+    {
+      method: "PATCH",
+      body: JSON.stringify({ status }),
+    },
+  );
+}
+
+
+export async function updateSuperAdminUserRole(
+  userId,
+  role,
+) {
+  return apiRequest(
+    `/superadmin/users/${encodeURIComponent(userId)}/role`,
+    {
+      method: "PATCH",
+      body: JSON.stringify({ role }),
+    },
+  );
+}
