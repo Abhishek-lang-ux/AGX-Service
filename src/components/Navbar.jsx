@@ -181,7 +181,7 @@ const profilePhoto = normalizeAssetUrl(profile?.avatarPath || "");
 
         {/* Logo */}
         <Link to="/" className="logo" onClick={closeMenu}>
-          <span>AG</span>X
+          <img src="./assets/logo.PNG" alt="logo" />
         </Link>
 
         {/* Desktop Navigation */}

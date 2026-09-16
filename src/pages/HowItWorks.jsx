@@ -219,7 +219,7 @@ function HowItWorks() {
 
               <div className="hiw-upload-top">
                 <div className="hiw-mini-brand">
-                  <span>AG</span>X
+                  <img src="./assets/logo.PNG" alt="logo" />
                 </div>
 
                 <div>

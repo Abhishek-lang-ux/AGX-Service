@@ -282,7 +282,7 @@ function About() {
               <div className="about-dashboard-top">
 
                 <div className="about-dashboard-brand">
-                  <span>AG</span>X
+                  <img src="./assets/logo.PNG" alt="logo" />
                 </div>
 
                 <div>
@@ -436,7 +436,7 @@ function About() {
           <div className="about-mission">
 
             <div className="about-mission-mark">
-              <span>AG</span>X
+              <img src="./assets/logo.PNG" alt="logo" />
             </div>
 
             <div className="about-mission-copy">
