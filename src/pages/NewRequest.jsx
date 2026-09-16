@@ -206,17 +206,15 @@ const requiredDocumentsByService = {
     { key: "pan", label: "PAN Card" },
     { key: "aadhaar-front", label: "Aadhaar Front" },
     { key: "aadhaar-back", label: "Aadhaar Back" },
-    { key: "form-16", label: "Form 16" },
+    { key: "form-16", label: "Form 16(if salaried" },
     { key: "bank-statement", label: "Bank Statement" },
     { key: "bank-passbook", label: "Bank Passbook" },
   ],
 
   "accounting-bookkeeping": [
-    { key: "pan", label: "PAN Card" },
     { key: "gst-certificate", label: "GST Certificate" },
     { key: "bank-statement", label: "Bank Statement" },
     { key: "sales-purchase-data", label: "Sales / Purchase Data" },
-    { key: "invoices", label: "Invoices" },
   ],
 
   "aadhaar-pan-link": [
