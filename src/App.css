@@ -182,3 +182,547 @@
     border-right-color: var(--border);
   }
 }
+
+
+/* =========================================================
+   SUPERADMIN PAYMENTS
+========================================================= */
+
+.superadmin-payment-refresh {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.superadmin-payment-refresh:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+}
+
+.superadmin-payment-refresh:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.superadmin-payment-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.superadmin-payment-summary-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 92px;
+  padding: 18px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+}
+
+.superadmin-payment-summary-icon {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 11px;
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.superadmin-payment-summary-card span {
+  display: block;
+  margin-bottom: 5px;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.superadmin-payment-summary-card strong {
+  display: block;
+  color: #0f172a;
+  font-size: 25px;
+  line-height: 1.1;
+}
+
+/* =========================================================
+   TOOLBAR
+========================================================= */
+
+.superadmin-payment-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.superadmin-payment-search {
+  flex: 1;
+  min-width: 0;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  background: #ffffff;
+  border: 1px solid #dbe3ec;
+  border-radius: 10px;
+  color: #64748b;
+}
+
+.superadmin-payment-search:focus-within {
+  border-color: #94a3b8;
+  box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.12);
+}
+
+.superadmin-payment-search input {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #0f172a;
+  font-size: 14px;
+}
+
+.superadmin-payment-search input::placeholder {
+  color: #94a3b8;
+}
+
+.superadmin-payment-filter {
+  width: 170px;
+  height: 46px;
+  padding: 0 12px;
+  border: 1px solid #dbe3ec;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 14px;
+  outline: none;
+  cursor: pointer;
+}
+
+/* =========================================================
+   ERROR
+========================================================= */
+
+.superadmin-payment-error {
+  margin-bottom: 18px;
+  padding: 13px 16px;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* =========================================================
+   TABLE PANEL
+========================================================= */
+
+.superadmin-payment-table-panel {
+  width: 100%;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.05);
+}
+
+.superadmin-payment-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.superadmin-payment-table {
+  width: 100%;
+  min-width: 1100px;
+  border-collapse: collapse;
+}
+
+.superadmin-payment-table thead {
+  background: #f8fafc;
+}
+
+.superadmin-payment-table th {
+  padding: 14px 16px;
+  border-bottom: 1px solid #e2e8f0;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-align: left;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.superadmin-payment-table td {
+  padding: 16px;
+  border-bottom: 1px solid #eef2f7;
+  color: #334155;
+  font-size: 13px;
+  vertical-align: middle;
+}
+
+.superadmin-payment-table tbody tr {
+  transition: background 0.15s ease;
+}
+
+.superadmin-payment-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.superadmin-payment-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.superadmin-payment-request {
+  display: inline-block;
+  color: #334155;
+  font-weight: 600;
+}
+
+.superadmin-payment-client {
+  display: inline-block;
+  max-width: 190px;
+  overflow: hidden;
+  color: #475569;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.superadmin-payment-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 82px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.superadmin-payment-status.pending {
+  background: #fff7ed;
+  color: #c2410c;
+}
+
+.superadmin-payment-status.accepted {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.superadmin-payment-status.rejected {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+/* =========================================================
+   PAYMENT ACTIONS
+========================================================= */
+
+.superadmin-payment-actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.superadmin-payment-view-btn,
+.superadmin-payment-action-btn,
+.superadmin-payment-accept-btn,
+.superadmin-payment-reject-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 10px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.superadmin-payment-view-btn {
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #334155;
+}
+
+.superadmin-payment-view-btn:hover {
+  background: #f8fafc;
+}
+
+.superadmin-payment-action-btn {
+  width: 34px;
+  padding: 0;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #475569;
+}
+
+.superadmin-payment-action-btn:hover {
+  background: #f8fafc;
+}
+
+.superadmin-payment-accept-btn {
+  border: 1px solid #a7f3d0;
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.superadmin-payment-accept-btn:hover {
+  background: #d1fae5;
+}
+
+.superadmin-payment-reject-btn {
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.superadmin-payment-reject-btn:hover {
+  background: #fee2e2;
+}
+
+.superadmin-payment-view-btn:disabled,
+.superadmin-payment-action-btn:disabled,
+.superadmin-payment-accept-btn:disabled,
+.superadmin-payment-reject-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* =========================================================
+   LOADING / EMPTY
+========================================================= */
+
+.superadmin-payment-loading,
+.superadmin-payment-empty {
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 40px;
+  text-align: center;
+  color: #64748b;
+}
+
+.superadmin-payment-loading p,
+.superadmin-payment-empty p {
+  margin: 8px 0 0;
+  font-size: 14px;
+}
+
+.superadmin-payment-empty h2 {
+  margin: 14px 0 4px;
+  color: #0f172a;
+  font-size: 20px;
+}
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.superadmin-payment-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.55);
+}
+
+.superadmin-payment-modal {
+  width: 100%;
+  max-width: 520px;
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.25);
+}
+
+.superadmin-payment-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.superadmin-payment-modal-header h2 {
+  margin: 5px 0 0;
+  color: #0f172a;
+  font-size: 23px;
+}
+
+.superadmin-payment-modal > p {
+  margin: 0 0 18px;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.superadmin-payment-modal-close {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 8px;
+  background: #f1f5f9;
+  color: #475569;
+  cursor: pointer;
+}
+
+.superadmin-payment-modal-close:hover {
+  background: #e2e8f0;
+}
+
+.superadmin-payment-modal-label {
+  display: block;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.superadmin-payment-modal-label textarea {
+  width: 100%;
+  min-height: 110px;
+  margin-top: 8px;
+  padding: 12px;
+  box-sizing: border-box;
+  resize: vertical;
+  border: 1px solid #cbd5e1;
+  border-radius: 9px;
+  outline: none;
+  color: #0f172a;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.superadmin-payment-modal-label textarea:focus {
+  border-color: #64748b;
+  box-shadow: 0 0 0 3px rgba(100, 116, 139, 0.1);
+}
+
+.superadmin-payment-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.superadmin-payment-modal-cancel,
+.superadmin-payment-reject-confirm {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 40px;
+  padding: 0 15px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.superadmin-payment-modal-cancel {
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #334155;
+}
+
+.superadmin-payment-reject-confirm {
+  border: 1px solid #dc2626;
+  background: #dc2626;
+  color: #ffffff;
+}
+
+.superadmin-payment-reject-confirm:hover {
+  background: #b91c1c;
+}
+
+/* =========================================================
+   SPINNER
+========================================================= */
+
+.superadmin-payment-spin {
+  animation: superadmin-payment-spin 0.9s linear infinite;
+}
+
+@keyframes superadmin-payment-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1100px) {
+  .superadmin-payment-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .superadmin-payment-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .superadmin-payment-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .superadmin-payment-filter {
+    width: 100%;
+  }
+
+  .superadmin-payment-modal {
+    padding: 20px;
+  }
+
+  .superadmin-payment-modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .superadmin-payment-modal-cancel,
+  .superadmin-payment-reject-confirm {
+    width: 100%;
+  }
+}
