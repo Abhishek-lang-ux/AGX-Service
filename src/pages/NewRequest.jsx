@@ -196,7 +196,8 @@ const fallbackServices = [
 const requiredDocumentsByService = {
   "gst-registration": [
     { key: "pan", label: "PAN Card" },
-    { key: "aadhaar", label: "Aadhaar Card" },
+    { key: "aadhaar-front", label: "Aadhaar Front" },
+    { key: "aadhaar-back", label: "Aadhaar Back" },
     { key: "photo", label: "Photograph" },
     { key: "address-proof", label: "Address Proof" },
     { key: "bank-proof", label: "Bank Account Proof" },
