@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import "./about.css";
-import Abhishek from "../assets/Abhishek.jpeg";
+import Abhishek from "../assets/Abhishek.PNG";
 import Akash from "../assets/Akash.PNG";
 import logo from '../assets/logo.PNG'
 

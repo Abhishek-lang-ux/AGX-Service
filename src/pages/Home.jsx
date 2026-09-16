@@ -14,7 +14,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import "../index.css";
-import Abhishek from "../assets/Abhishek.jpeg";
+import Abhishek from "../assets/Abhishek.PNG";
 import Akash from "../assets/Akash.PNG";
 
 function Home() {
