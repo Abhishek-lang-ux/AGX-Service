@@ -167,3 +167,5 @@ export async function updateSuperAdminPaymentStatus(
     }
   );
 }
+
+export default SuperAdminPayments
