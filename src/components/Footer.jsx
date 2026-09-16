@@ -1,6 +1,7 @@
 import { ArrowUpRight, Mail, MessageCircle, Phone, ShieldCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 import "./footer.css";
+import logo from '../assets/logo.PNG'
 
 function Footer() {
   return (
@@ -8,7 +9,7 @@ function Footer() {
       <div className="container agx-footer-main">
         <div className="agx-footer-brand">
           <Link to="/" className="agx-footer-logo">
-            <span>AGX</span><small>Services</small>
+            <img src={logo} alt="logo" style={{width: '127px', height: '48px'}} /><small>Services</small>
           </Link>
           <p>A structured digital experience for professional service requests, documents, communication and tracking.</p>
           <div className="agx-footer-security">

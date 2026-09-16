@@ -182,7 +182,7 @@ const profilePhoto = normalizeAssetUrl(profile?.avatarPath || "");
 
         {/* Logo */}
         <Link to="/" className="logo" onClick={closeMenu}>
-          <img src={logo} alt="logo" />
+          <img src={logo} alt="logo" style={{width: '150px', height: '50px'}} />
         </Link>
 
         {/* Desktop Navigation */}

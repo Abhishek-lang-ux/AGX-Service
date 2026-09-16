@@ -220,7 +220,7 @@ function HowItWorks() {
 
               <div className="hiw-upload-top">
                 <div className="hiw-mini-brand">
-                  <img src={logo} alt="logo" />
+                  <img src={logo} alt="logo" style={{width: '42px', height: '29px'}} />
                 </div>
 
                 <div>
