@@ -1,0 +1,165 @@
+.superadmin-documents-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.superadmin-document-search {
+  width: 380px;
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 13px;
+  border: 1px solid #d9e4ef;
+  border-radius: 9px;
+  background: #fff;
+}
+
+.superadmin-document-search svg {
+  color: #6d8297;
+}
+
+.superadmin-document-search input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  font-size: 13px;
+}
+
+.superadmin-refresh-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 14px;
+  border: 1px solid #d8e4ef;
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.superadmin-documents-table-wrap {
+  overflow-x: auto;
+  background: #fff;
+  border: 1px solid #dce6ef;
+  border-radius: 12px;
+}
+
+.superadmin-documents-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 1050px;
+}
+
+.superadmin-documents-table th {
+  padding: 13px 15px;
+  text-align: left;
+  background: #f7faff;
+  border-bottom: 1px solid #e0e8f0;
+  color: #526b82;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.superadmin-documents-table td {
+  padding: 14px 15px;
+  border-bottom: 1px solid #edf2f7;
+  color: #334e68;
+  font-size: 12px;
+}
+
+.superadmin-document-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 220px;
+}
+
+.superadmin-document-icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 8px;
+  background: #eaf4ff;
+  color: #0879e8;
+}
+
+.superadmin-document-name strong {
+  display: block;
+  color: #173b5f;
+}
+
+.superadmin-document-name span {
+  display: block;
+  margin-top: 3px;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #8294a7;
+}
+
+.superadmin-client-cell strong {
+  display: block;
+}
+
+.superadmin-client-cell span {
+  display: block;
+  margin-top: 3px;
+  color: #8294a7;
+}
+
+.document-status {
+  display: inline-flex;
+  padding: 5px 8px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.document-status-uploaded {
+  background: #eaf4ff;
+  color: #0879e8;
+}
+
+.document-status-verified {
+  background: #e9f8ef;
+  color: #16804b;
+}
+
+.document-status-rejected {
+  background: #fff0f0;
+  color: #c53030;
+}
+
+.document-actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.document-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 9px;
+  border: 1px solid #d7e3ef;
+  border-radius: 7px;
+  background: #fff;
+  color: #315b7d;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.document-actions button:hover {
+  background: #f2f7fc;
+}

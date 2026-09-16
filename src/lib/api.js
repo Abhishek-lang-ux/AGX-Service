@@ -6,8 +6,13 @@ const API_BASE_URL =
 
 export function normalizeAssetUrl(value) {
   if (!value) return "";
+
   const url = String(value).trim();
-  if (url.startsWith("http://")) return `https://${url.slice(7)}`;
+
+  if (url.startsWith("http://")) {
+    return `https://${url.slice(7)}`;
+  }
+
   return url;
 }
 
@@ -209,7 +214,10 @@ export async function submitRequestWithPayment({
   formData.append("priority", priority);
 
   if (paymentScreenshot) {
-    formData.append("paymentScreenshot", paymentScreenshot);
+    formData.append(
+      "paymentScreenshot",
+      paymentScreenshot
+    );
   }
 
   return apiRequest("/requests/submit-with-payment", {
@@ -343,6 +351,167 @@ export async function getSuperAdminDashboard() {
 }
 
 /* =========================================================
+   SUPERADMIN DOCUMENTS
+========================================================= */
+
+/*
+ * Get all client documents
+ */
+
+export async function getSuperAdminDocuments() {
+  return apiRequest("/superadmin/documents");
+}
+
+/*
+ * Open document in new browser tab
+ *
+ * Direct URL cannot be opened safely because the API
+ * requires Authorization header.
+ *
+ * So we fetch the protected file first and create
+ * a temporary Blob URL.
+ */
+
+export async function openSuperAdminDocument(documentId) {
+  const token = getAuthToken();
+
+  const headers = {};
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  const response = await fetch(
+    `${API_BASE_URL}/superadmin/documents/${encodeURIComponent(
+      documentId
+    )}/view`,
+    {
+      method: "GET",
+      headers,
+    }
+  );
+
+  if (!response.ok) {
+    let message = "Unable to open document.";
+
+    try {
+      const data = await response.json();
+      message = data.message || message;
+    } catch {
+      // Ignore JSON parsing error
+    }
+
+    throw new Error(message);
+  }
+
+  const blob = await response.blob();
+
+  const blobUrl = URL.createObjectURL(blob);
+
+  const newWindow = window.open(
+    blobUrl,
+    "_blank",
+    "noopener,noreferrer"
+  );
+
+  /*
+   * If browser popup blocker blocks the new tab,
+   * still revoke the temporary URL later.
+   */
+
+  setTimeout(() => {
+    URL.revokeObjectURL(blobUrl);
+  }, 60000);
+
+  return newWindow;
+}
+
+/*
+ * Download document
+ */
+
+export async function downloadSuperAdminDocument(
+  documentId
+) {
+  const token = getAuthToken();
+
+  const headers = {};
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  const response = await fetch(
+    `${API_BASE_URL}/superadmin/documents/${encodeURIComponent(
+      documentId
+    )}/download`,
+    {
+      method: "GET",
+      headers,
+    }
+  );
+
+  if (!response.ok) {
+    let message = "Unable to download document.";
+
+    try {
+      const data = await response.json();
+      message = data.message || message;
+    } catch {
+      // Ignore JSON parsing error
+    }
+
+    throw new Error(message);
+  }
+
+  const blob = await response.blob();
+
+  /*
+   * Get filename from Content-Disposition
+   */
+
+  const contentDisposition =
+    response.headers.get("Content-Disposition");
+
+  let filename = `document-${documentId}`;
+
+  if (contentDisposition) {
+    const match = contentDisposition.match(
+      /filename\*?=(?:UTF-8'')?"?([^"]+)"?/i
+    );
+
+    if (match?.[1]) {
+      try {
+        filename = decodeURIComponent(match[1]);
+      } catch {
+        filename = match[1];
+      }
+    }
+  }
+
+  /*
+   * Create temporary download link
+   */
+
+  const blobUrl = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+
+  link.href = blobUrl;
+  link.download = filename;
+
+  document.body.appendChild(link);
+
+  link.click();
+
+  link.remove();
+
+  setTimeout(() => {
+    URL.revokeObjectURL(blobUrl);
+  }, 1000);
+}
+
+/* =========================================================
    SUPERADMIN USERS
 ========================================================= */
 
@@ -371,34 +540,36 @@ export async function getSuperAdminUsers({
   params.set("limit", String(limit));
 
   return apiRequest(
-    `/superadmin/users?${params.toString()}`,
+    `/superadmin/users?${params.toString()}`
   );
 }
-
 
 export async function updateSuperAdminUserStatus(
   userId,
-  status,
+  status
 ) {
   return apiRequest(
-    `/superadmin/users/${encodeURIComponent(userId)}/status`,
+    `/superadmin/users/${encodeURIComponent(
+      userId
+    )}/status`,
     {
       method: "PATCH",
       body: JSON.stringify({ status }),
-    },
+    }
   );
 }
 
-
 export async function updateSuperAdminUserRole(
   userId,
-  role,
+  role
 ) {
   return apiRequest(
-    `/superadmin/users/${encodeURIComponent(userId)}/role`,
+    `/superadmin/users/${encodeURIComponent(
+      userId
+    )}/role`,
     {
       method: "PATCH",
       body: JSON.stringify({ role }),
-    },
+    }
   );
 }
