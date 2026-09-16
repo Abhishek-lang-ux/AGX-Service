@@ -200,14 +200,15 @@ const requiredDocumentsByService = {
     { key: "aadhaar-back", label: "Aadhaar Back" },
     { key: "photo", label: "Photograph" },
     { key: "address-proof", label: "Address Proof" },
-    { key: "bank-proof", label: "Bank Account Proof" },
   ],
 
   "income-tax-return": [
     { key: "pan", label: "PAN Card" },
-    { key: "aadhaar", label: "Aadhaar Card" },
+    { key: "aadhaar-front", label: "Aadhaar Front" },
+    { key: "aadhaar-back", label: "Aadhaar Back" },
     { key: "form-16", label: "Form 16" },
     { key: "bank-statement", label: "Bank Statement" },
+    { key: "bank-passbook", label: "Bank Passbook" },
   ],
 
   "accounting-bookkeeping": [
@@ -215,50 +216,40 @@ const requiredDocumentsByService = {
     { key: "gst-certificate", label: "GST Certificate" },
     { key: "bank-statement", label: "Bank Statement" },
     { key: "sales-purchase-data", label: "Sales / Purchase Data" },
-  ],
-
-  "project-report": [
-    { key: "pan", label: "PAN Card" },
-    { key: "aadhaar", label: "Aadhaar Card" },
-    { key: "business-proof", label: "Business Proof" },
-    { key: "bank-statement", label: "Bank Statement" },
-  ],
-
-  "balance-sheet": [
-    { key: "pan", label: "PAN Card" },
-    { key: "gst-certificate", label: "GST Certificate" },
-    { key: "bank-statement", label: "Bank Statement" },
-    { key: "financial-data", label: "Financial Data" },
+    { key: "invoices", label: "Invoices" },
   ],
 
   "aadhaar-pan-link": [
     { key: "pan", label: "PAN Card" },
-    { key: "aadhaar", label: "Aadhaar Card" },
+    { key: "aadhaar-front", label: "Aadhaar Front" },
+    { key: "aadhaar-back", label: "Aadhaar Back" },
   ],
 
   "website-development": [
-    { key: "business-details", label: "Business Details" },
     { key: "logo", label: "Logo / Brand Assets" },
   ],
 
   "pf-withdrawal": [
     { key: "pan", label: "PAN Card" },
-    { key: "aadhaar", label: "Aadhaar Card" },
-    { key: "uan", label: "UAN / EPFO Document" },
+    { key: "aadhaar-front", label: "Aadhaar Front" },
+    { key: "aadhaar-back", label: "Aadhaar Back" },
     { key: "bank-proof", label: "Bank Account Proof" },
   ],
 
   "pvc-aadhaar-card": [
-    { key: "aadhaar", label: "Aadhaar Card" },
+    { key: "aadhaar-front", label: "Aadhaar Front" },
+    { key: "aadhaar-back", label: "Aadhaar Back" },
   ],
 
   "pan-card-services": [
-    { key: "aadhaar", label: "Aadhaar Card" },
+    { key: "aadhaar-front", label: "Aadhaar Front" },
+    { key: "aadhaar-back", label: "Aadhaar Back" },
     { key: "photo", label: "Photograph" },
+    { key: "sign", label: "Sign" },
+    { key: "markesheet", label: "10ht or 12th Marksheet" },
   ],
 
   "ebill-website-development": [
-    { key: "business-details", label: "Business Details" },
     { key: "logo", label: "Logo / Brand Assets" },
   ],
 };
