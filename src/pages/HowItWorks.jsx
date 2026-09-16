@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import "./HowItWorks.css";
+import logo from '../assets/logo.PNG'
 
 const steps = [
   {
@@ -219,7 +220,7 @@ function HowItWorks() {
 
               <div className="hiw-upload-top">
                 <div className="hiw-mini-brand">
-                  <img src="./assets/logo.PNG" alt="logo" />
+                  <img src={logo} alt="logo" />
                 </div>
 
                 <div>

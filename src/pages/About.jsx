@@ -15,6 +15,7 @@ import { Link } from "react-router-dom";
 import "./about.css";
 import Abhishek from "../assets/Abhishek.jpeg";
 import Akash from "../assets/Akash.PNG";
+import logo from '../assets/logo.PNG'
 
 const values = [
   {
@@ -282,7 +283,7 @@ function About() {
               <div className="about-dashboard-top">
 
                 <div className="about-dashboard-brand">
-                  <img src="./assets/logo.PNG" alt="logo" />
+                  <img src={logo} alt="logo" />
                 </div>
 
                 <div>
@@ -436,7 +437,7 @@ function About() {
           <div className="about-mission">
 
             <div className="about-mission-mark">
-              <img src="./assets/logo.PNG" alt="logo" />
+              <img src={logo} alt="logo" />
             </div>
 
             <div className="about-mission-copy">

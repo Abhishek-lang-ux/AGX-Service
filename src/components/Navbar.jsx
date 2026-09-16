@@ -17,6 +17,7 @@ import { useEffect, useRef, useState } from "react";
 import LogoutModal from "./LogoutModal";
 import { apiRequest, getNotifications } from "../lib/api";
 import "./navbar.css";
+import logo from '../assets/logo.PNG'
 
 function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -181,7 +182,7 @@ const profilePhoto = normalizeAssetUrl(profile?.avatarPath || "");
 
         {/* Logo */}
         <Link to="/" className="logo" onClick={closeMenu}>
-          <img src="./assets/logo.PNG" alt="logo" />
+          <img src={logo} alt="logo" />
         </Link>
 
         {/* Desktop Navigation */}
