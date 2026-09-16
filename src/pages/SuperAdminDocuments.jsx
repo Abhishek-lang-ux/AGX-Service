@@ -15,12 +15,15 @@ import {
 
 import "./superAdminDocuments.css";
 
-
 function SuperAdminDocuments() {
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
+
+  /* =========================================================
+     LOAD DOCUMENTS
+  ========================================================= */
 
   const loadDocuments = async () => {
     try {
@@ -35,7 +38,10 @@ function SuperAdminDocuments() {
           : []
       );
     } catch (err) {
-      console.error("Load SuperAdmin documents error:", err);
+      console.error(
+        "Load SuperAdmin documents error:",
+        err
+      );
 
       setError(
         err?.message ||
@@ -46,38 +52,72 @@ function SuperAdminDocuments() {
     }
   };
 
+  /* =========================================================
+     INITIAL LOAD
+  ========================================================= */
 
   useEffect(() => {
     loadDocuments();
   }, []);
 
+  /* =========================================================
+     CLIENT NAME
+  ========================================================= */
+
+  const getClientName = (document) => {
+    const name = [
+      document?.firstName,
+      document?.lastName,
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .trim();
+
+    return name || "Client";
+  };
+
+  /* =========================================================
+     SEARCH
+  ========================================================= */
 
   const filteredDocuments = documents.filter(
     (document) => {
+      const clientName = getClientName(document);
+
       const text = [
         document.originalName,
-        document.requestNumber,
-        document.serviceName,
-        document.client?.email,
-        document.client?.firstName,
-        document.client?.lastName,
         document.documentType,
+        document.requestNumber,
+        document.requestTitle,
+        document.serviceName,
+        document.userEmail,
+        document.phone,
+        document.firstName,
+        document.lastName,
+        clientName,
       ]
         .filter(Boolean)
         .join(" ")
         .toLowerCase();
 
       return text.includes(
-        search.toLowerCase()
+        search.trim().toLowerCase()
       );
     }
   );
 
+  /* =========================================================
+     FILE SIZE
+  ========================================================= */
 
   const formatFileSize = (bytes) => {
-    if (!bytes) return "0 KB";
+    const size = Number(bytes || 0);
 
-    const mb = bytes / (1024 * 1024);
+    if (!size) {
+      return "0 KB";
+    }
+
+    const mb = size / (1024 * 1024);
 
     if (mb >= 1) {
       return `${mb.toFixed(2)} MB`;
@@ -85,27 +125,39 @@ function SuperAdminDocuments() {
 
     return `${Math.max(
       1,
-      Math.round(bytes / 1024)
+      Math.round(size / 1024)
     )} KB`;
   };
 
+  /* =========================================================
+     STATUS
+  ========================================================= */
 
-  const getClientName = (client) => {
-    const name = [
-      client?.firstName,
-      client?.lastName,
-    ]
-      .filter(Boolean)
-      .join(" ");
+  const getStatusLabel = (status) => {
+    if (!status) {
+      return "Uploaded";
+    }
 
-    return name || "Client";
+    return String(status)
+      .replace(/_/g, " ")
+      .replace(/\b\w/g, (letter) =>
+        letter.toUpperCase()
+      );
   };
 
+  /* =========================================================
+     VIEW
+  ========================================================= */
 
   const handleView = async (id) => {
     try {
       await openSuperAdminDocument(id);
     } catch (err) {
+      console.error(
+        "View document error:",
+        err
+      );
+
       alert(
         err?.message ||
           "Unable to open document."
@@ -113,11 +165,19 @@ function SuperAdminDocuments() {
     }
   };
 
+  /* =========================================================
+     DOWNLOAD
+  ========================================================= */
 
   const handleDownload = async (id) => {
     try {
       await downloadSuperAdminDocument(id);
     } catch (err) {
+      console.error(
+        "Download document error:",
+        err
+      );
+
       alert(
         err?.message ||
           "Unable to download document."
@@ -125,9 +185,16 @@ function SuperAdminDocuments() {
     }
   };
 
+  /* =========================================================
+     RENDER
+  ========================================================= */
 
   return (
     <div className="superadmin-section-page">
+
+      {/* =====================================================
+          HEADER
+      ===================================================== */}
 
       <div className="superadmin-page-header">
 
@@ -150,16 +217,28 @@ function SuperAdminDocuments() {
           onClick={loadDocuments}
           disabled={loading}
         >
-          <RefreshCw size={16} />
-          Refresh
+          <RefreshCw
+            size={16}
+            className={
+              loading
+                ? "refresh-icon-spinning"
+                : ""
+            }
+          />
+
+          {loading ? "Loading..." : "Refresh"}
         </button>
 
       </div>
 
+      {/* =====================================================
+          TOOLBAR
+      ===================================================== */}
 
       <div className="superadmin-documents-toolbar">
 
         <div className="superadmin-document-search">
+
           <Search size={17} />
 
           <input
@@ -170,33 +249,58 @@ function SuperAdminDocuments() {
             }
             placeholder="Search client, request or document..."
           />
+
         </div>
 
         <strong>
-          {filteredDocuments.length} Documents
+          {filteredDocuments.length}{" "}
+          {filteredDocuments.length === 1
+            ? "Document"
+            : "Documents"}
         </strong>
 
       </div>
 
+      {/* =====================================================
+          LOADING
+      ===================================================== */}
 
       {loading ? (
         <div className="superadmin-empty-panel">
-          <RefreshCw size={30} />
 
-          <h2>Loading documents...</h2>
+          <RefreshCw
+            size={30}
+            className="refresh-icon-spinning"
+          />
+
+          <h2>
+            Loading documents...
+          </h2>
 
           <p>
-            Please wait while AGX loads client
-            documents.
+            Please wait while AGX loads
+            client documents.
           </p>
+
         </div>
+
       ) : error ? (
+
+        /* ===================================================
+           ERROR
+        =================================================== */
+
         <div className="superadmin-empty-panel">
+
           <FileCheck2 size={40} />
 
-          <h2>Unable to load documents</h2>
+          <h2>
+            Unable to load documents
+          </h2>
 
-          <p>{error}</p>
+          <p>
+            {error}
+          </p>
 
           <button
             type="button"
@@ -204,19 +308,39 @@ function SuperAdminDocuments() {
           >
             Try Again
           </button>
+
         </div>
+
       ) : filteredDocuments.length === 0 ? (
+
+        /* ===================================================
+           EMPTY
+        =================================================== */
+
         <div className="superadmin-empty-panel">
+
           <FileCheck2 size={42} />
 
-          <h2>No Documents Found</h2>
+          <h2>
+            {search
+              ? "No Documents Found"
+              : "No Client Documents"}
+          </h2>
 
           <p>
-            Client submitted documents will appear
-            here.
+            {search
+              ? "No documents match your search."
+              : "Client submitted documents will appear here."}
           </p>
+
         </div>
+
       ) : (
+
+        /* ===================================================
+           TABLE
+        =================================================== */
+
         <div className="superadmin-documents-table-wrap">
 
           <table className="superadmin-documents-table">
@@ -236,113 +360,190 @@ function SuperAdminDocuments() {
             <tbody>
 
               {filteredDocuments.map(
-                (document) => (
-                  <tr key={document.id}>
+                (document) => {
 
-                    <td>
-                      <div className="superadmin-document-name">
+                  const clientName =
+                    getClientName(document);
 
-                        <div className="superadmin-document-icon">
-                          <FileCheck2 size={17} />
+                  return (
+                    <tr
+                      key={document.id}
+                    >
+
+                      {/* =================================
+                          DOCUMENT
+                      ================================= */}
+
+                      <td>
+
+                        <div className="superadmin-document-name">
+
+                          <div className="superadmin-document-icon">
+                            <FileCheck2
+                              size={17}
+                            />
+                          </div>
+
+                          <div>
+
+                            <strong>
+                              {document.documentType ||
+                                document.originalName}
+                            </strong>
+
+                            <span>
+                              {document.originalName}
+                            </span>
+
+                          </div>
+
                         </div>
 
-                        <div>
+                      </td>
+
+                      {/* =================================
+                          CLIENT
+                      ================================= */}
+
+                      <td>
+
+                        <div className="superadmin-client-cell">
+
                           <strong>
-                            {document.documentType ||
-                              document.originalName}
+                            {clientName}
                           </strong>
 
-                          <span>
-                            {document.originalName}
-                          </span>
+                          {document.userEmail && (
+                            <span>
+                              {document.userEmail}
+                            </span>
+                          )}
+
+                          {document.phone && (
+                            <small>
+                              {document.phone}
+                            </small>
+                          )}
+
                         </div>
 
-                      </div>
-                    </td>
+                      </td>
 
+                      {/* =================================
+                          REQUEST
+                      ================================= */}
 
-                    <td>
-                      <div className="superadmin-client-cell">
-                        <strong>
-                          {getClientName(
-                            document.client
+                      <td>
+
+                        <div className="superadmin-request-cell">
+
+                          <strong>
+                            {document.requestNumber ||
+                              "—"}
+                          </strong>
+
+                          {document.requestTitle && (
+                            <span>
+                              {document.requestTitle}
+                            </span>
                           )}
-                        </strong>
 
-                        <span>
-                          {document.client?.email}
+                        </div>
+
+                      </td>
+
+                      {/* =================================
+                          SERVICE
+                      ================================= */}
+
+                      <td>
+
+                        <span className="superadmin-service-name">
+                          {document.serviceName ||
+                            "—"}
                         </span>
-                      </div>
-                    </td>
 
+                      </td>
 
-                    <td>
-                      <strong>
-                        {document.requestNumber}
-                      </strong>
-                    </td>
+                      {/* =================================
+                          STATUS
+                      ================================= */}
 
+                      <td>
 
-                    <td>
-                      {document.serviceName || "—"}
-                    </td>
-
-
-                    <td>
-                      <span
-                        className={`document-status document-status-${String(
-                          document.status || "uploaded"
-                        ).toLowerCase()}`}
-                      >
-                        {document.status ||
-                          "uploaded"}
-                      </span>
-                    </td>
-
-
-                    <td>
-                      {formatFileSize(
-                        document.fileSize
-                      )}
-                    </td>
-
-
-                    <td>
-
-                      <div className="document-actions">
-
-                        <button
-                          type="button"
-                          title="View document"
-                          onClick={() =>
-                            handleView(
-                              document.id
-                            )
-                          }
+                        <span
+                          className={`document-status document-status-${String(
+                            document.status ||
+                              "uploaded"
+                          )
+                            .toLowerCase()
+                            .replace(
+                              /\s+/g,
+                              "-"
+                            )}`}
                         >
-                          <Eye size={16} />
-                          View
-                        </button>
+                          {getStatusLabel(
+                            document.status
+                          )}
+                        </span>
 
-                        <button
-                          type="button"
-                          title="Download document"
-                          onClick={() =>
-                            handleDownload(
-                              document.id
-                            )
-                          }
-                        >
-                          <Download size={16} />
-                          Download
-                        </button>
+                      </td>
 
-                      </div>
+                      {/* =================================
+                          SIZE
+                      ================================= */}
 
-                    </td>
+                      <td>
+                        {formatFileSize(
+                          document.fileSize
+                        )}
+                      </td>
 
-                  </tr>
-                )
+                      {/* =================================
+                          ACTION
+                      ================================= */}
+
+                      <td>
+
+                        <div className="document-actions">
+
+                          <button
+                            type="button"
+                            title="View document"
+                            onClick={() =>
+                              handleView(
+                                document.id
+                              )
+                            }
+                          >
+                            <Eye size={16} />
+                            <span>View</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            title="Download document"
+                            onClick={() =>
+                              handleDownload(
+                                document.id
+                              )
+                            }
+                          >
+                            <Download
+                              size={16}
+                            />
+                            <span>
+                              Download
+                            </span>
+                          </button>
+
+                        </div>
+
+                      </td>
+
+                    </tr>
+                  );
+                }
               )}
 
             </tbody>
