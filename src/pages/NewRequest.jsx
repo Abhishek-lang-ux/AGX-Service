@@ -193,6 +193,75 @@ const fallbackServices = [
   },
 ];
 
+const requiredDocumentsByService = {
+  "gst-registration": [
+    { key: "pan", label: "PAN Card" },
+    { key: "aadhaar", label: "Aadhaar Card" },
+    { key: "photo", label: "Photograph" },
+    { key: "address-proof", label: "Address Proof" },
+    { key: "bank-proof", label: "Bank Account Proof" },
+  ],
+
+  "income-tax-return": [
+    { key: "pan", label: "PAN Card" },
+    { key: "aadhaar", label: "Aadhaar Card" },
+    { key: "form-16", label: "Form 16" },
+    { key: "bank-statement", label: "Bank Statement" },
+  ],
+
+  "accounting-bookkeeping": [
+    { key: "pan", label: "PAN Card" },
+    { key: "gst-certificate", label: "GST Certificate" },
+    { key: "bank-statement", label: "Bank Statement" },
+    { key: "sales-purchase-data", label: "Sales / Purchase Data" },
+  ],
+
+  "project-report": [
+    { key: "pan", label: "PAN Card" },
+    { key: "aadhaar", label: "Aadhaar Card" },
+    { key: "business-proof", label: "Business Proof" },
+    { key: "bank-statement", label: "Bank Statement" },
+  ],
+
+  "balance-sheet": [
+    { key: "pan", label: "PAN Card" },
+    { key: "gst-certificate", label: "GST Certificate" },
+    { key: "bank-statement", label: "Bank Statement" },
+    { key: "financial-data", label: "Financial Data" },
+  ],
+
+  "aadhaar-pan-link": [
+    { key: "pan", label: "PAN Card" },
+    { key: "aadhaar", label: "Aadhaar Card" },
+  ],
+
+  "website-development": [
+    { key: "business-details", label: "Business Details" },
+    { key: "logo", label: "Logo / Brand Assets" },
+  ],
+
+  "pf-withdrawal": [
+    { key: "pan", label: "PAN Card" },
+    { key: "aadhaar", label: "Aadhaar Card" },
+    { key: "uan", label: "UAN / EPFO Document" },
+    { key: "bank-proof", label: "Bank Account Proof" },
+  ],
+
+  "pvc-aadhaar-card": [
+    { key: "aadhaar", label: "Aadhaar Card" },
+  ],
+
+  "pan-card-services": [
+    { key: "aadhaar", label: "Aadhaar Card" },
+    { key: "photo", label: "Photograph" },
+  ],
+
+  "ebill-website-development": [
+    { key: "business-details", label: "Business Details" },
+    { key: "logo", label: "Logo / Brand Assets" },
+  ],
+};
+
 function NewRequest() {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
@@ -209,13 +278,18 @@ function NewRequest() {
   const [contactMethod, setContactMethod] = useState("whatsapp");
   const [reference, setReference] = useState("");
   const [consent, setConsent] = useState(false);
-  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [documentFiles, setDocumentFiles] = useState({});
   // Manual QR payment state
 const [paymentScreenshot, setPaymentScreenshot] = useState(null);
 
   // Submission state
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+
+  const requiredDocuments =
+  requiredDocumentsByService[selectedService?.slug] || [];
+
+const selectedFiles = Object.values(documentFiles).filter(Boolean);
 
   useEffect(() => {
     let mounted = true;
@@ -282,15 +356,21 @@ const [paymentScreenshot, setPaymentScreenshot] = useState(null);
     setContactMethod("whatsapp");
     setReference("");
     setConsent(false);
-    setSelectedFiles([]);
+    setDocumentFiles({});
     setError("");
     setPaymentScreenshot(null);
   };
 
-  const handleFileChange = (event) => {
-    const files = Array.from(event.target.files || []);
-    setSelectedFiles(files);
-  };
+  const handleDocumentChange = (documentKey, file) => {
+  if (!file) return;
+
+  setDocumentFiles((prev) => ({
+    ...prev,
+    [documentKey]: file,
+  }));
+
+  setError("");
+};
 
   const handlePaymentScreenshotChange = (event) => {
   const file = event.target.files?.[0] || null;
@@ -343,6 +423,19 @@ const [paymentScreenshot, setPaymentScreenshot] = useState(null);
       );
       return;
     }
+
+    const missingDocuments = requiredDocuments.filter(
+  (document) => !documentFiles[document.key]
+);
+
+if (missingDocuments.length > 0) {
+  setError(
+    `Please upload: ${missingDocuments
+      .map((document) => document.label)
+      .join(", ")}`
+  );
+  return;
+}
 
     setStep(3);
   };
@@ -718,51 +811,89 @@ const [paymentScreenshot, setPaymentScreenshot] = useState(null);
                     </label>
                   </div>
 
-                  <div className="requirements-upload">
-                    <div>
-                      <div className="requirements-upload-icon">
-                        <FileText size={19} />
-                      </div>
+                  <div className="required-documents-box">
 
-                      <div>
-                        <strong>
-                          Have supporting documents?
-                        </strong>
+  <div className="required-documents-heading">
+    <div>
+      <strong>Required Documents</strong>
+      <p>
+        Please upload the documents required for{" "}
+        {selectedService.title}.
+      </p>
+    </div>
+  </div>
 
-                        <p>
-                          You can upload documents now or
-                          after creating the request.
-                        </p>
+  <div className="required-documents-list">
 
-                        {selectedFiles.length > 0 && (
-                          <p>
-                            {selectedFiles.length} file
-                            {selectedFiles.length > 1
-                              ? "s"
-                              : ""}{" "}
-                            selected
-                          </p>
-                        )}
-                      </div>
-                    </div>
+    {requiredDocuments.length > 0 ? (
+      requiredDocuments.map((document) => (
+        <div
+          className="required-document-row"
+          key={document.key}
+        >
 
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      multiple
-                      hidden
-                      onChange={handleFileChange}
-                    />
+          <div className="required-document-info">
 
-                    <button
-                      type="button"
-                      onClick={() =>
-                        fileInputRef.current?.click()
-                      }
-                    >
-                      Choose Files
-                    </button>
-                  </div>
+            <div className="required-document-icon">
+              <FileText size={18} />
+            </div>
+
+            <div>
+              <strong>{document.label}</strong>
+
+              {documentFiles[document.key] ? (
+                <span className="document-selected">
+                  ✓ {documentFiles[document.key].name}
+                </span>
+              ) : (
+                <span>
+                  Required document
+                </span>
+              )}
+            </div>
+
+          </div>
+
+          <div>
+
+            <input
+              id={`document-${document.key}`}
+              type="file"
+              accept=".pdf,.jpg,.jpeg,.png,.webp"
+              hidden
+              onChange={(event) =>
+                handleDocumentChange(
+                  document.key,
+                  event.target.files?.[0]
+                )
+              }
+            />
+
+            <label
+              htmlFor={`document-${document.key}`}
+              className="document-upload-btn"
+            >
+              {documentFiles[document.key]
+                ? "Change File"
+                : `Upload ${document.label}`}
+            </label>
+
+          </div>
+
+        </div>
+      ))
+    ) : (
+      <div className="no-documents-message">
+        <FileText size={18} />
+        <span>
+          No specific documents are required for this service.
+        </span>
+      </div>
+    )}
+
+  </div>
+
+</div>
 
                   <label className="requirements-consent">
                     <input
