@@ -743,3 +743,49 @@ export async function updateSuperAdminUserRole(
     }
   );
 }
+
+/* =========================================================
+   SUPERADMIN REQUESTS
+========================================================= */
+
+export async function getSuperAdminRequests({
+  search = "",
+  status = "",
+} = {}) {
+  const params = new URLSearchParams();
+
+  if (search.trim()) {
+    params.set("search", search.trim());
+  }
+
+  if (status) {
+    params.set("status", status);
+  }
+
+  const query = params.toString();
+
+  return apiRequest(
+    `/superadmin/requests${query ? `?${query}` : ""}`
+  );
+}
+
+
+export async function getSuperAdminRequest(requestId) {
+  return apiRequest(
+    `/superadmin/requests/${encodeURIComponent(requestId)}`
+  );
+}
+
+
+export async function updateSuperAdminRequestStatus(
+  requestId,
+  status
+) {
+  return apiRequest(
+    `/superadmin/requests/${encodeURIComponent(requestId)}/status`,
+    {
+      method: "PATCH",
+      body: JSON.stringify({ status }),
+    }
+  );
+}

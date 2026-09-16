@@ -11,10 +11,16 @@ import {
   ChevronRight,
   Plus,
 } from "lucide-react";
+
 import { getMyRequests } from "../lib/api.js";
 import { Link } from "react-router-dom";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+
 import "./myrequests.css";
+
+/* =========================================================
+   STATUS CONFIG
+========================================================= */
 
 const statusMeta = {
   pending: {
@@ -23,42 +29,49 @@ const statusMeta = {
     icon: Clock3,
     progress: 10,
   },
+
   submitted: {
     label: "Submitted",
     className: "submitted",
     icon: Clock3,
     progress: 20,
   },
+
   in_review: {
     label: "Under Review",
     className: "under-review",
     icon: Search,
     progress: 42,
   },
+
   documents_required: {
     label: "Correction Required",
     className: "correction-required",
     icon: AlertCircle,
     progress: 54,
   },
+
   processing: {
     label: "Processing",
     className: "processing",
     icon: Clock3,
     progress: 68,
   },
+
   completed: {
     label: "Completed",
     className: "completed",
     icon: CheckCircle2,
     progress: 100,
   },
+
   rejected: {
     label: "Rejected",
     className: "rejected",
     icon: AlertCircle,
     progress: 100,
   },
+
   cancelled: {
     label: "Cancelled",
     className: "cancelled",
@@ -66,6 +79,10 @@ const statusMeta = {
     progress: 100,
   },
 };
+
+/* =========================================================
+   HELPERS
+========================================================= */
 
 function formatDate(value) {
   if (!value) return "—";
@@ -116,6 +133,10 @@ function getStatusMeta(status) {
   );
 }
 
+/* =========================================================
+   COMPONENT
+========================================================= */
+
 function MyRequests() {
   const [apiRequests, setApiRequests] = useState([]);
   const [requestsLoading, setRequestsLoading] = useState(true);
@@ -127,10 +148,59 @@ function MyRequests() {
 
   const ITEMS_PER_PAGE = 6;
 
+  /* =======================================================
+     LOAD REQUESTS
+
+     This function is reusable for:
+     - Initial load
+     - 15 second automatic refresh
+     - Tab/window focus refresh
+     - Manual browser refresh flow
+  ======================================================= */
+
+  const loadRequests = useCallback(async (showLoader = false) => {
+    try {
+      if (showLoader) {
+        setRequestsLoading(true);
+      }
+
+      setRequestsError("");
+
+      const data = await getMyRequests();
+
+      const latestRequests = Array.isArray(data?.requests)
+        ? data.requests
+        : [];
+
+      setApiRequests(latestRequests);
+    } catch (error) {
+      setRequestsError(
+        error?.message || "Unable to load your requests"
+      );
+    } finally {
+      if (showLoader) {
+        setRequestsLoading(false);
+      }
+    }
+  }, []);
+
+  /* =======================================================
+     INITIAL LOAD + AUTO REFRESH
+
+     Every 15 seconds client checks latest request status.
+
+     Example:
+     SuperAdmin:
+       Pending → Processing
+
+     Client:
+       Within max 15 sec → Processing
+  ======================================================= */
+
   useEffect(() => {
     let active = true;
 
-    async function loadRequests() {
+    async function initialLoad() {
       try {
         setRequestsLoading(true);
         setRequestsError("");
@@ -139,11 +209,16 @@ function MyRequests() {
 
         if (!active) return;
 
-        setApiRequests(Array.isArray(data?.requests) ? data.requests : []);
+        setApiRequests(
+          Array.isArray(data?.requests)
+            ? data.requests
+            : []
+        );
       } catch (error) {
         if (active) {
           setRequestsError(
-            error.message || "Unable to load your requests"
+            error?.message ||
+              "Unable to load your requests"
           );
         }
       } finally {
@@ -153,12 +228,51 @@ function MyRequests() {
       }
     }
 
-    loadRequests();
+    initialLoad();
+
+    /* -----------------------------------------------
+       AUTO REFRESH EVERY 15 SECONDS
+    ----------------------------------------------- */
+
+    const refreshTimer = setInterval(() => {
+      if (active) {
+        loadRequests(false);
+      }
+    }, 15000);
+
+    /* -----------------------------------------------
+       REFRESH WHEN USER RETURNS TO TAB
+    ----------------------------------------------- */
+
+    const handleVisibility = () => {
+      if (
+        document.visibilityState === "visible" &&
+        active
+      ) {
+        loadRequests(false);
+      }
+    };
+
+    document.addEventListener(
+      "visibilitychange",
+      handleVisibility
+    );
 
     return () => {
       active = false;
+
+      clearInterval(refreshTimer);
+
+      document.removeEventListener(
+        "visibilitychange",
+        handleVisibility
+      );
     };
-  }, []);
+  }, [loadRequests]);
+
+  /* =======================================================
+     SUMMARY
+  ======================================================= */
 
   const summary = useMemo(() => {
     const total = apiRequests.length;
@@ -175,7 +289,11 @@ function MyRequests() {
 
     const inProgress = apiRequests.filter(
       (request) =>
-        !["completed", "rejected", "cancelled"].includes(request.status)
+        ![
+          "completed",
+          "rejected",
+          "cancelled",
+        ].includes(request.status)
     ).length;
 
     return {
@@ -185,6 +303,10 @@ function MyRequests() {
       actionRequired,
     };
   }, [apiRequests]);
+
+  /* =======================================================
+     SEARCH + FILTER
+  ======================================================= */
 
   const filteredRequests = useMemo(() => {
     const search = searchTerm.trim().toLowerCase();
@@ -218,7 +340,8 @@ function MyRequests() {
       }
 
       if (activeFilter === "completed") {
-        matchesFilter = request.status === "completed";
+        matchesFilter =
+          request.status === "completed";
       }
 
       if (activeFilter === "action") {
@@ -227,23 +350,42 @@ function MyRequests() {
           request.status === "rejected";
       }
 
-      return matchesSearch && matchesFilter && meta;
+      return (
+        matchesSearch &&
+        matchesFilter &&
+        Boolean(meta)
+      );
     });
-  }, [apiRequests, searchTerm, activeFilter]);
+  }, [
+    apiRequests,
+    searchTerm,
+    activeFilter,
+  ]);
+
+  /* =======================================================
+     RESET PAGE WHEN SEARCH/FILTER CHANGES
+  ======================================================= */
 
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, activeFilter]);
 
+  /* =======================================================
+     PAGINATION
+  ======================================================= */
+
   const totalPages = Math.max(
     1,
-    Math.ceil(filteredRequests.length / ITEMS_PER_PAGE)
+    Math.ceil(
+      filteredRequests.length / ITEMS_PER_PAGE
+    )
   );
 
-  const visibleRequests = filteredRequests.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
-  );
+  const visibleRequests =
+    filteredRequests.slice(
+      (currentPage - 1) * ITEMS_PER_PAGE,
+      currentPage * ITEMS_PER_PAGE
+    );
 
   const showingStart =
     filteredRequests.length === 0
@@ -255,6 +397,10 @@ function MyRequests() {
     filteredRequests.length
   );
 
+  /* =======================================================
+     UI
+  ======================================================= */
+
   return (
     <main className="requests-page">
       {requestsLoading && (
@@ -264,12 +410,19 @@ function MyRequests() {
       )}
 
       {requestsError && (
-        <div className="api-error-banner" role="alert">
+        <div
+          className="api-error-banner"
+          role="alert"
+        >
           {requestsError}
         </div>
       )}
 
       <div className="requests-container">
+        {/* =================================================
+            HEADER
+        ================================================= */}
+
         <section className="requests-header">
           <div>
             <span className="requests-eyebrow">
@@ -280,15 +433,23 @@ function MyRequests() {
             <h1>My Requests</h1>
 
             <p>
-              Track and manage all your AGX service requests in one place.
+              Track and manage all your AGX service
+              requests in one place.
             </p>
           </div>
 
-          <Link to="/new-request" className="requests-new-btn">
+          <Link
+            to="/new-request"
+            className="requests-new-btn"
+          >
             <Plus size={18} />
             New Request
           </Link>
         </section>
+
+        {/* =================================================
+            SUMMARY
+        ================================================= */}
 
         <section className="requests-summary">
           <div>
@@ -299,27 +460,42 @@ function MyRequests() {
           <div>
             <span>In Progress</span>
             <strong>
-              {String(summary.inProgress).padStart(2, "0")}
+              {String(summary.inProgress).padStart(
+                2,
+                "0"
+              )}
             </strong>
           </div>
 
           <div>
             <span>Completed</span>
             <strong>
-              {String(summary.completed).padStart(2, "0")}
+              {String(summary.completed).padStart(
+                2,
+                "0"
+              )}
             </strong>
           </div>
 
           <div>
             <span>Action Required</span>
             <strong>
-              {String(summary.actionRequired).padStart(2, "0")}
+              {String(summary.actionRequired).padStart(
+                2,
+                "0"
+              )}
             </strong>
           </div>
         </section>
 
+        {/* =================================================
+            REQUEST PANEL
+        ================================================= */}
+
         <section className="requests-panel">
           <div className="requests-toolbar">
+            {/* SEARCH */}
+
             <div className="requests-search">
               <Search size={18} />
 
@@ -328,51 +504,75 @@ function MyRequests() {
                 placeholder="Search requests..."
                 value={searchTerm}
                 onChange={(event) =>
-                  setSearchTerm(event.target.value)
+                  setSearchTerm(
+                    event.target.value
+                  )
                 }
               />
             </div>
 
+            {/* FILTERS */}
+
             <div className="requests-filter-group">
               <button
                 className={`requests-filter ${
-                  activeFilter === "all" ? "active" : ""
+                  activeFilter === "all"
+                    ? "active"
+                    : ""
                 }`}
                 type="button"
-                onClick={() => setActiveFilter("all")}
+                onClick={() =>
+                  setActiveFilter("all")
+                }
               >
                 All <span>{summary.total}</span>
               </button>
 
               <button
                 className={`requests-filter ${
-                  activeFilter === "active" ? "active" : ""
+                  activeFilter === "active"
+                    ? "active"
+                    : ""
                 }`}
                 type="button"
-                onClick={() => setActiveFilter("active")}
+                onClick={() =>
+                  setActiveFilter("active")
+                }
               >
-                Active <span>{summary.inProgress}</span>
+                Active{" "}
+                <span>{summary.inProgress}</span>
               </button>
 
               <button
                 className={`requests-filter ${
-                  activeFilter === "completed" ? "active" : ""
+                  activeFilter === "completed"
+                    ? "active"
+                    : ""
                 }`}
                 type="button"
-                onClick={() => setActiveFilter("completed")}
+                onClick={() =>
+                  setActiveFilter("completed")
+                }
               >
-                Completed <span>{summary.completed}</span>
+                Completed{" "}
+                <span>{summary.completed}</span>
               </button>
 
               <button
                 className={`requests-filter ${
-                  activeFilter === "action" ? "active" : ""
+                  activeFilter === "action"
+                    ? "active"
+                    : ""
                 }`}
                 type="button"
-                onClick={() => setActiveFilter("action")}
+                onClick={() =>
+                  setActiveFilter("action")
+                }
               >
                 Action Required{" "}
-                <span>{summary.actionRequired}</span>
+                <span>
+                  {summary.actionRequired}
+                </span>
               </button>
             </div>
 
@@ -385,18 +585,30 @@ function MyRequests() {
             </button>
           </div>
 
+          {/* =================================================
+              REQUEST LIST
+          ================================================= */}
+
           <div className="requests-list">
-            {!requestsLoading && visibleRequests.length > 0 ? (
+            {!requestsLoading &&
+            visibleRequests.length > 0 ? (
               visibleRequests.map((request) => {
-                const meta = getStatusMeta(request.status);
+                const meta = getStatusMeta(
+                  request.status
+                );
+
                 const StatusIcon = meta.icon;
-                const progress = getRequestProgress(request);
+
+                const progress =
+                  getRequestProgress(request);
 
                 return (
                   <article
                     className="request-row"
                     key={request.id}
                   >
+                    {/* REQUEST MAIN */}
+
                     <div className="request-row-main">
                       <div className="request-row-icon">
                         <FileText size={20} />
@@ -414,26 +626,34 @@ function MyRequests() {
                             className={`requests-status ${meta.className}`}
                           >
                             <StatusIcon size={13} />
+
                             {meta.label}
                           </span>
                         </div>
 
                         <div className="request-meta">
                           <span>
-                            {request.requestNumber || "—"}
+                            {request.requestNumber ||
+                              "—"}
                           </span>
 
                           <i />
 
                           <span>
-                            {request.title || "Service Request"}
+                            {request.title ||
+                              "Service Request"}
                           </span>
 
                           <i />
 
                           <span>
-                            <CalendarDays size={13} />
-                            {formatDate(request.createdAt)}
+                            <CalendarDays
+                              size={13}
+                            />
+
+                            {formatDate(
+                              request.createdAt
+                            )}
                           </span>
                         </div>
 
@@ -444,10 +664,15 @@ function MyRequests() {
                       </div>
                     </div>
 
+                    {/* PROGRESS */}
+
                     <div className="request-row-progress">
                       <div className="progress-label">
                         <span>Progress</span>
-                        <strong>{progress}%</strong>
+
+                        <strong>
+                          {progress}%
+                        </strong>
                       </div>
 
                       <div className="requests-progress">
@@ -459,12 +684,21 @@ function MyRequests() {
                       </div>
                     </div>
 
+                    {/* AMOUNT */}
+
                     <div className="request-row-payment">
-                      <span>Service amount</span>
+                      <span>
+                        Service amount
+                      </span>
+
                       <strong>
-                        {formatAmount(request.amount)}
+                        {formatAmount(
+                          request.amount
+                        )}
                       </strong>
                     </div>
+
+                    {/* DETAILS */}
 
                     <Link
                       to={`/request-details/${request.id}`}
@@ -482,33 +716,47 @@ function MyRequests() {
                   <FileText size={24} />
 
                   <strong>
-                    {searchTerm || activeFilter !== "all"
+                    {searchTerm ||
+                    activeFilter !== "all"
                       ? "No matching requests"
                       : "No service requests yet"}
                   </strong>
 
                   <span>
-                    {searchTerm || activeFilter !== "all"
+                    {searchTerm ||
+                    activeFilter !== "all"
                       ? "Try changing your search or filter."
                       : "Start your first AGX service request to see it here."}
                   </span>
 
-                  {!searchTerm && activeFilter === "all" && (
-                    <Link to="/new-request">
-                      Create Request{" "}
-                      <ArrowRight size={15} />
-                    </Link>
-                  )}
+                  {!searchTerm &&
+                    activeFilter ===
+                      "all" && (
+                      <Link to="/new-request">
+                        Create Request{" "}
+                        <ArrowRight size={15} />
+                      </Link>
+                    )}
                 </div>
               )
             )}
           </div>
 
+          {/* =================================================
+              PAGINATION
+          ================================================= */}
+
           {filteredRequests.length > 0 && (
             <div className="requests-pagination">
               <span>
-                Showing <strong>{showingStart}–{showingEnd}</strong>{" "}
-                of <strong>{filteredRequests.length}</strong>{" "}
+                Showing{" "}
+                <strong>
+                  {showingStart}–{showingEnd}
+                </strong>{" "}
+                of{" "}
+                <strong>
+                  {filteredRequests.length}
+                </strong>{" "}
                 requests
               </span>
 
@@ -526,7 +774,9 @@ function MyRequests() {
                 </button>
 
                 {Array.from(
-                  { length: totalPages },
+                  {
+                    length: totalPages,
+                  },
                   (_, index) => index + 1
                 ).map((page) => (
                   <button
@@ -537,7 +787,9 @@ function MyRequests() {
                         ? "page-active"
                         : ""
                     }
-                    onClick={() => setCurrentPage(page)}
+                    onClick={() =>
+                      setCurrentPage(page)
+                    }
                   >
                     {page}
                   </button>
@@ -545,26 +797,37 @@ function MyRequests() {
 
                 <button
                   type="button"
-                  disabled={currentPage === totalPages}
+                  disabled={
+                    currentPage === totalPages
+                  }
                   onClick={() =>
                     setCurrentPage((page) =>
-                      Math.min(totalPages, page + 1)
+                      Math.min(
+                        totalPages,
+                        page + 1
+                      )
                     )
                   }
                 >
-                  Next <ArrowRight size={14} />
+                  Next{" "}
+                  <ArrowRight size={14} />
                 </button>
               </div>
             </div>
           )}
         </section>
 
+        {/* =================================================
+            INFO
+        ================================================= */}
+
         <div className="requests-info">
           <Filter size={17} />
 
           <span>
-            Request statuses are updated by the AGX team as your
-            service moves through each stage.
+            Request statuses are updated by the AGX
+            team as your service moves through each
+            stage.
           </span>
         </div>
       </div>
