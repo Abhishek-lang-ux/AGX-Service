@@ -264,7 +264,9 @@ function NewRequest() {
   const [step, setStep] = useState(1);
 
   // Step 2 form state
-  const [requirement, setRequirement] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [mobileNumber, setMobileNumber] = useState("");
+  const [emailId, setEmailId] = useState("");
   const [contactMethod, setContactMethod] = useState("whatsapp");
   const [reference, setReference] = useState("");
   const [consent, setConsent] = useState(false);
@@ -342,7 +344,9 @@ const selectedFiles = Object.values(documentFiles).filter(Boolean);
     setStep(2);
 
     // Reset form for a fresh request
-    setRequirement("");
+    setFullName("");
+    setMobileNumber("");
+    setEmailId("");
     setContactMethod("whatsapp");
     setReference("");
     setConsent(false);
@@ -402,8 +406,18 @@ const selectedFiles = Object.values(documentFiles).filter(Boolean);
       return;
     }
 
-    if (!requirement.trim()) {
-      setError("Please describe your requirement before continuing.");
+    if (!fullName.trim()) {
+      setError("Please enter your full name.");
+      return;
+    }
+
+    if (!/^[6-9]\d{9}$/.test(mobileNumber)) {
+      setError("Please enter a valid 10-digit mobile number.");
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailId.trim())) {
+      setError("Please enter a valid email address.");
       return;
     }
 
@@ -436,8 +450,12 @@ if (missingDocuments.length > 0) {
     return;
   }
 
-  if (!requirement.trim()) {
-    setError("Please enter your requirement.");
+  if (
+    !fullName.trim() ||
+    !/^[6-9]\d{9}$/.test(mobileNumber) ||
+    !emailId.trim()
+  ) {
+    setError("Please complete your client information.");
     setStep(2);
     return;
   }
@@ -464,7 +482,10 @@ if (missingDocuments.length > 0) {
       serviceId: Number(selectedService.id),
       serviceSlug: selectedService.slug,
       title: selectedService.title,
-      description: requirement.trim(),
+      description: `Client Information:
+Name: ${fullName.trim()}
+Mobile: ${mobileNumber}
+Email: ${emailId.trim()}`,
       priority: "normal",
       paymentScreenshot,
     });
@@ -740,20 +761,59 @@ if (missingDocuments.length > 0) {
                 </div>
 
                 <div className="requirements-form">
-                  <label>
-                    <span>
-                      What do you need assistance with?
-                    </span>
+                  <div className="client-details-form">
+                    <div className="client-form-heading">
+                      <strong>Client Information</strong>
+                      <p>Please provide your contact details to continue.</p>
+                    </div>
 
-                    <textarea
-                      value={requirement}
-                      onChange={(event) =>
-                        setRequirement(event.target.value)
-                      }
-                      placeholder="Briefly describe your requirement..."
-                      rows="5"
-                    />
-                  </label>
+                    <div className="requirements-two-column">
+                      <label>
+                        <span>Full Name</span>
+                        <input
+                          type="text"
+                          value={fullName}
+                          onChange={(event) =>
+                            setFullName(event.target.value)
+                          }
+                          placeholder="Enter your full name"
+                          autoComplete="name"
+                        />
+                      </label>
+
+                      <label>
+                        <span>Mobile Number</span>
+                        <input
+                          type="tel"
+                          value={mobileNumber}
+                          onChange={(event) =>
+                            setMobileNumber(
+                              event.target.value
+                                .replace(/\D/g, "")
+                                .slice(0, 10)
+                            )
+                          }
+                          placeholder="Enter 10-digit mobile number"
+                          inputMode="numeric"
+                          autoComplete="tel"
+                          maxLength={10}
+                        />
+                      </label>
+                    </div>
+
+                    <label>
+                      <span>Email ID</span>
+                      <input
+                        type="email"
+                        value={emailId}
+                        onChange={(event) =>
+                          setEmailId(event.target.value)
+                        }
+                        placeholder="Enter your email address"
+                        autoComplete="email"
+                      />
+                    </label>
+                  </div>
 
                   <div className="requirements-two-column">
                     <label>
@@ -987,12 +1047,25 @@ if (missingDocuments.length > 0) {
             <h2>Ready to submit your request?</h2>
 
             <p>
-              Review the selected service and continue. Payment
-              and document requirements can be handled in the
-              following stage.
+              Review your client information and selected service before
+              continuing to payment.
             </p>
 
             <div className="review-summary">
+              <div>
+                <span>Client Name</span>
+                <strong>{fullName}</strong>
+              </div>
+
+              <div>
+                <span>Mobile</span>
+                <strong>{mobileNumber}</strong>
+              </div>
+
+              <div>
+                <span>Email</span>
+                <strong>{emailId}</strong>
+              </div>
               <div>
                 <span>Service</span>
                 <strong>{selectedService.title}</strong>
