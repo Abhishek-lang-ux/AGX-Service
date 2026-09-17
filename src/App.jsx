@@ -16,6 +16,7 @@ import Register from "./pages/Register";
 import RetailerRegister from "./pages/RetailerRegister";
 
 import Dashboard from "./pages/Dashboard";
+import RetailerDashboard from "./pages/RetailerDashboard";
 import MyRequests from "./pages/MyRequests";
 import RequestDetails from "./pages/RequestDetails";
 import SuperAdminDashboard from "./pages/SuperAdminDashboard";
@@ -89,6 +90,12 @@ function AppLayout() {
         <Route
           path="/dashboard"
           element={<Dashboard />}
+        />
+
+        {/* Retailer Portal */}
+        <Route
+          path="/retailer/dashboard"
+          element={<ProtectedRoute allowedRole="retailer"><RetailerDashboard /></ProtectedRoute>}
         />
 
         <Route

@@ -34,7 +34,7 @@ function Login() {
       });
 
       setAuthSession(data.token, data.user, remember);
-      navigate("/dashboard", { replace: true });
+      navigate(data.user?.role === "retailer" ? "/retailer/dashboard" : "/dashboard", { replace: true });
     } catch (requestError) {
       setError(requestError.message || "Unable to sign in. Please try again.");
     } finally {

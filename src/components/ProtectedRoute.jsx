@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { apiRequest, clearAuthSession, getAuthToken } from "../lib/api.js";
 
-function ProtectedRoute() {
+function ProtectedRoute({ allowedRole }) {
   const location = useLocation();
   const [checking, setChecking] = useState(true);
   const [authenticated, setAuthenticated] = useState(false);
+  const [userRole, setUserRole] = useState(null);
 
   useEffect(() => {
     let active = true;
@@ -22,8 +23,8 @@ function ProtectedRoute() {
       }
 
       try {
-        await apiRequest("/auth/me");
-        if (active) setAuthenticated(true);
+        const meData = await apiRequest("/auth/me");
+        if (active) { setUserRole(meData?.user?.role || meData?.role || null); setAuthenticated(true); }
       } catch {
         clearAuthSession();
         if (active) setAuthenticated(false);
@@ -48,6 +49,10 @@ function ProtectedRoute() {
 
   if (!authenticated) {
     return <Navigate to="/" replace state={{ from: location.pathname }} />;
+  }
+
+  if (allowedRole && userRole !== allowedRole) {
+    return <Navigate to={userRole === "retailer" ? "/retailer/dashboard" : "/dashboard"} replace />;
   }
 
   return <Outlet />;
