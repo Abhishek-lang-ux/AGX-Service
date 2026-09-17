@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { apiRequest, clearAuthSession, getAuthToken } from "../lib/api.js";
 
-function ProtectedRoute({ allowedRole }) {
+function ProtectedRoute({ allowedRole, children }) {
   const location = useLocation();
   const [checking, setChecking] = useState(true);
   const [authenticated, setAuthenticated] = useState(false);
@@ -55,7 +55,7 @@ function ProtectedRoute({ allowedRole }) {
     return <Navigate to={userRole === "retailer" ? "/retailer/dashboard" : "/dashboard"} replace />;
   }
 
-  return <Outlet />;
+  return children || <Outlet />;
 }
 
 export default ProtectedRoute;
