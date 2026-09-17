@@ -795,18 +795,21 @@ export async function updateSuperAdminRequestStatus(
 ========================================================= */
 
 export async function forgotPassword(email) {
-  const response = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
+  const response = await fetch(
+    "https://api.agxservice.online/api/auth/forgot-password",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email }),
     },
-    body: JSON.stringify({ email }),
-  });
+  );
 
-  const data = await response.json();
+  const data = await response.json().catch(() => ({}));
 
   if (!response.ok) {
-    throw new Error(data.message || "Unable to send reset link.");
+    throw new Error(data.message || "Unable to send the reset link.");
   }
 
   return data;
