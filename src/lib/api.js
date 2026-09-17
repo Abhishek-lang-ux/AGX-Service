@@ -795,10 +795,21 @@ export async function updateSuperAdminRequestStatus(
 ========================================================= */
 
 export async function forgotPassword(email) {
-  return apiRequest("/auth/forgot-password", {
+  const response = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
     method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify({ email }),
   });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Unable to send reset link.");
+  }
+
+  return data;
 }
 
 export async function resetPassword(token, password) {
