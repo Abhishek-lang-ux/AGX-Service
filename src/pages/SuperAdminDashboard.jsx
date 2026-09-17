@@ -13,7 +13,7 @@ import {
 
 import { useEffect, useState } from "react";
 
-import { getSuperAdminDashboard } from "../lib/api.js";
+import { getSuperAdminDashboard, getPendingRetailers, updateRetailerApproval } from "../lib/api.js";
 
 import "./superadmin.css";
 
@@ -74,6 +74,10 @@ function SuperAdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState("");
+  const [pendingRetailers, setPendingRetailers] = useState([]);
+  const [retailerLoading, setRetailerLoading] = useState(true);
+  const [retailerActionId, setRetailerActionId] = useState(null);
+  const [retailerError, setRetailerError] = useState("");
 
   async function loadDashboard(showRefresh = false) {
     try {
@@ -101,6 +105,44 @@ function SuperAdminDashboard() {
   useEffect(() => {
     loadDashboard();
   }, []);
+  async function loadPendingRetailers() {
+    try {
+      setRetailerLoading(true);
+      setRetailerError("");
+
+      const response = await getPendingRetailers();
+
+      setPendingRetailers(response?.retailers || []);
+    } catch (err) {
+      setRetailerError(
+        err?.message || "Unable to load pending retailer applications."
+      );
+    } finally {
+      setRetailerLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    loadPendingRetailers();
+  }, []);
+
+  async function handleRetailerApproval(retailerId, action) {
+    try {
+      setRetailerActionId(retailerId);
+      setRetailerError("");
+
+      await updateRetailerApproval(retailerId, action);
+
+      await loadPendingRetailers();
+    } catch (err) {
+      setRetailerError(
+        err?.message || "Unable to update retailer application."
+      );
+    } finally {
+      setRetailerActionId(null);
+    }
+  }
+
 
   if (loading) {
     return (
@@ -380,6 +422,97 @@ function SuperAdminDashboard() {
             </div>
           </div>
 
+        </section>
+
+        {/* PENDING RETAILER APPLICATIONS */}
+        <section className="superadmin-panel retailer-applications-panel">
+
+          <div className="superadmin-section-head">
+            <div>
+              <span>RETAILER MANAGEMENT</span>
+              <h2>Pending Retailer Applications</h2>
+            </div>
+
+            <UserRoundCog size={19} />
+          </div>
+
+          {retailerError && (
+            <div className="superadmin-inline-error">
+              <AlertCircle size={16} />
+              <span>{retailerError}</span>
+            </div>
+          )}
+
+          {retailerLoading ? (
+            <div className="retailer-empty-state">
+              <div className="superadmin-loader" />
+              <span>Loading retailer applications...</span>
+            </div>
+          ) : pendingRetailers.length === 0 ? (
+            <div className="retailer-empty-state">
+              <CheckCircle2 size={24} />
+              <strong>No pending retailer applications</strong>
+              <span>New retailer registrations will appear here.</span>
+            </div>
+          ) : (
+            <div className="superadmin-table-wrapper">
+              <table className="superadmin-table">
+                <thead>
+                  <tr>
+                    <th>Retailer</th>
+                    <th>Email</th>
+                    <th>Location</th>
+                    <th>Applied</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {pendingRetailers.map((retailer) => (
+                    <tr key={retailer.id}>
+                      <td>
+                        <strong>{getFullName(retailer)}</strong>
+                      </td>
+                      <td>{retailer.email}</td>
+                      <td>
+                        {[retailer.city, retailer.state].filter(Boolean).join(", ") || "—"}
+                      </td>
+                      <td>{formatDate(retailer.createdAt)}</td>
+                      <td>
+                        <span className="status-badge status-pending">
+                          Pending
+                        </span>
+                      </td>
+                      <td>
+                        <div className="retailer-action-group">
+                          <button
+                            type="button"
+                            className="retailer-approve-btn"
+                            disabled={retailerActionId === retailer.id}
+                            onClick={() => handleRetailerApproval(retailer.id, "approve")}
+                          >
+                            <CheckCircle2 size={15} />
+                            Approve
+                          </button>
+
+                          <button
+                            type="button"
+                            className="retailer-reject-btn"
+                            disabled={retailerActionId === retailer.id}
+                            onClick={() => handleRetailerApproval(retailer.id, "reject")}
+                          >
+                            <AlertCircle size={15} />
+                            Reject
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </section>
 
         {/* RECENT USERS */}

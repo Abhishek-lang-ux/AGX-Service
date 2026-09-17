@@ -745,6 +745,24 @@ export async function updateSuperAdminUserRole(
 }
 
 /* =========================================================
+   SUPERADMIN RETAILERS
+========================================================= */
+
+export async function getPendingRetailers() {
+  return apiRequest("/superadmin/retailers/pending");
+}
+
+export async function updateRetailerApproval(retailerId, action) {
+  return apiRequest(
+    `/superadmin/retailers/${encodeURIComponent(retailerId)}/approval`,
+    {
+      method: "PATCH",
+      body: JSON.stringify({ action }),
+    }
+  );
+}
+
+/* =========================================================
    SUPERADMIN REQUESTS
 ========================================================= */
 
@@ -788,36 +806,4 @@ export async function updateSuperAdminRequestStatus(
       body: JSON.stringify({ status }),
     }
   );
-}
-
-/* =========================================================
-   FORGOT / RESET PASSWORD
-========================================================= */
-
-export async function forgotPassword(email) {
-  const response = await fetch(
-    "https://api.agxservice.online/api/auth/forgot-password",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email }),
-    },
-  );
-
-  const data = await response.json().catch(() => ({}));
-
-  if (!response.ok) {
-    throw new Error(data.message || "Unable to send the reset link.");
-  }
-
-  return data;
-}
-
-export async function resetPassword(token, password) {
-  return apiRequest("/auth/reset-password", {
-    method: "POST",
-    body: JSON.stringify({ token, password }),
-  });
 }

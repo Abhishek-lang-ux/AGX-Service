@@ -154,7 +154,7 @@ function Login() {
                   <div className="login-label-row">
                     <label htmlFor="login-password">Password</label>
 
-                    <Link to="/forgot-password">Forgot password?</Link>
+                    <a href="#forgot-password">Forgot password?</a>
                   </div>
 
                   <div className="login-input-wrap">
