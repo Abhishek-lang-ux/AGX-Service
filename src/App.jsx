@@ -13,6 +13,7 @@ import Contact from "./pages/Contact";
 
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import RetailerRegister from "./pages/RetailerRegister";
 
 import Dashboard from "./pages/Dashboard";
 import MyRequests from "./pages/MyRequests";
@@ -76,6 +77,7 @@ function AppLayout() {
         <Route path="/login" element={<Login />} />
 
         <Route path="/register" element={<Register />} />
+        <Route path="/retailer/register" element={<RetailerRegister />} />
 
 
         {/* =========================
