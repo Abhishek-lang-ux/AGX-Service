@@ -280,6 +280,19 @@ function Services() {
   const [servicesLoading, setServicesLoading] = useState(true);
   const [servicesError, setServicesError] = useState("");
 
+  const storedUser =
+    localStorage.getItem("agx_user") ||
+    sessionStorage.getItem("agx_user");
+
+  let userRole = "client";
+
+  try {
+    const parsedUser = storedUser ? JSON.parse(storedUser) : null;
+    userRole = parsedUser?.role || parsedUser?.user?.role || "client";
+  } catch {
+    userRole = "client";
+  }
+
   useEffect(() => {
     let active = true;
 
@@ -324,7 +337,7 @@ function Services() {
 
     return apiServices.map((service) => {
   const category = normalizeCategory(service.category);
-  const amount = Number(service.basePrice) || 0;
+  const amount = userRole === "retailer" ? Number(service.retailerPrice) || 0 : Number(service.basePrice) || 0;
 
   return {
     id: service.slug || service.id || service.name,

@@ -61,6 +61,19 @@ function normalizeCategory(value = "") {
   return categoryAliases[key] || key || "business";
 }
 
+function getStoredUserRole() {
+  const storedUser =
+    localStorage.getItem("agx_user") ||
+    sessionStorage.getItem("agx_user");
+
+  try {
+    const parsedUser = storedUser ? JSON.parse(storedUser) : null;
+    return parsedUser?.role || parsedUser?.user?.role || "client";
+  } catch {
+    return "client";
+  }
+}
+
 function formatServicePrice(amount) {
   return new Intl.NumberFormat("en-IN", {
     style: "currency",
@@ -302,8 +315,8 @@ const selectedFiles = Object.values(documentFiles).filter(Boolean);
           title: service.name,
           category: normalizeCategory(service.category),
           description: service.description || service.shortDescription || "AGX professional service assistance.",
-          price: formatServicePrice(service.basePrice),
-          amount: Number(service.basePrice) || 0,
+          price: formatServicePrice(getStoredUserRole() === "retailer" ? service.retailerPrice : service.basePrice),
+          amount: getStoredUserRole() === "retailer" ? Number(service.retailerPrice) || 0 : Number(service.basePrice) || 0,
           popular: Number(service.displayOrder) <= 2,
         })));
 

@@ -821,3 +821,16 @@ export async function resetPassword(token, password) {
     body: JSON.stringify({ token, password }),
   });
 }
+
+export async function updateRetailerServicePrice(
+  serviceId,
+  retailerPrice
+) {
+  return apiRequest(
+    `/superadmin/services/${encodeURIComponent(serviceId)}/retailer-price`,
+    {
+      method: "PATCH",
+      body: JSON.stringify({ retailerPrice }),
+    }
+  );
+}
