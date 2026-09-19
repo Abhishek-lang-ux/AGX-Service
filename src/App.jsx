@@ -97,7 +97,7 @@ function AppLayout() {
 
         <Route
           path="/dashboard"
-          element={<Dashboard />}
+          element={<ProtectedRoute allowedRole="client"><Dashboard /></ProtectedRoute>}
         />
 
         {/* Retailer Portal */}

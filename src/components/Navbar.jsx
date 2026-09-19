@@ -24,6 +24,20 @@ function Navbar() {
   const [unreadNotifications, setUnreadNotifications] = useState(0);
   const [profile, setProfile] = useState(null);
 
+  const getStoredUserRole = () => {
+    const storedUser = localStorage.getItem("agx_user") || sessionStorage.getItem("agx_user");
+    if (!storedUser) return "client";
+    try {
+      const parsedUser = JSON.parse(storedUser);
+      return parsedUser?.role || parsedUser?.user?.role || "client";
+    } catch {
+      return "client";
+    }
+  };
+
+  const userRole = profile?.role || getStoredUserRole();
+  const isRetailer = userRole === "retailer";
+
   // Frontend demo authentication state.
   // Backend authentication will replace this later.
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
@@ -269,13 +283,13 @@ const profilePhoto = normalizeAssetUrl(profile?.avatarPath || "");
 
   <div>
     <strong>{displayName}</strong>
-    <span>Client Account</span>
+    <span>{isRetailer ? "Retailer Account" : "Client Account"}</span>
   </div>
 </div>
                   <div className="account-dropdown-divider" />
 
                   <Link
-                    to="/dashboard"
+                    to={isRetailer ? "/retailer/dashboard" : "/dashboard"}
                     className="account-menu-item"
                     onClick={closeMenu}
                   >
@@ -417,10 +431,10 @@ const profilePhoto = normalizeAssetUrl(profile?.avatarPath || "");
 
 <div>
   <strong>{displayName}</strong>
-  <span>Client Account</span>
+  <span>{isRetailer ? "Retailer Account" : "Client Account"}</span>
 </div>
 </div>
-              <Link to="/dashboard" onClick={closeMenu}>
+              <Link to={isRetailer ? "/retailer/dashboard" : "/dashboard"} onClick={closeMenu}>
                 <LayoutDashboard size={17} />
                 Dashboard
               </Link>
