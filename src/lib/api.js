@@ -50,17 +50,13 @@ export function getStoredUser() {
 ========================================================= */
 
 export function setAuthSession(token, user, remember = false) {
-  const storage = remember ? localStorage : sessionStorage;
-  const otherStorage = remember ? sessionStorage : localStorage;
-
-  otherStorage.removeItem("agx_token");
-  otherStorage.removeItem("agx_user");
-
-  storage.setItem("agx_token", token);
-  storage.setItem("agx_user", JSON.stringify(user));
-
+  localStorage.setItem("agx_token", token);
+  localStorage.setItem("agx_user", JSON.stringify(user));
   sessionStorage.setItem("agx_logged_in", "true");
-
+  if (!remember) {
+    sessionStorage.removeItem("agx_token");
+    sessionStorage.removeItem("agx_user");
+  }
   window.dispatchEvent(new Event("agx-auth-change"));
 }
 
