@@ -1,12 +1,21 @@
 import { useEffect, useState } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { apiRequest, clearAuthSession, getAuthToken } from "../lib/api.js";
+import {
+  apiRequest,
+  clearAuthSession,
+  getAuthToken,
+  getStoredUser,
+} from "../lib/api.js";
 
 function ProtectedRoute({ allowedRole, children }) {
   const location = useLocation();
+  const storedUser = getStoredUser();
+  const storedRole =
+    storedUser?.role || storedUser?.user?.role || null;
+
   const [checking, setChecking] = useState(true);
-  const [authenticated, setAuthenticated] = useState(false);
-  const [userRole, setUserRole] = useState(null);
+  const [authenticated, setAuthenticated] = useState(Boolean(getAuthToken()));
+  const [userRole, setUserRole] = useState(storedRole);
 
   useEffect(() => {
     let active = true;
@@ -17,6 +26,7 @@ function ProtectedRoute({ allowedRole, children }) {
       if (!token) {
         if (active) {
           setAuthenticated(false);
+          setUserRole(null);
           setChecking(false);
         }
         return;
@@ -24,18 +34,25 @@ function ProtectedRoute({ allowedRole, children }) {
 
       try {
         const meData = await apiRequest("/auth/me");
-        const role = meData?.user?.role || meData?.role || null;
+        const role =
+          meData?.user?.role ||
+          meData?.role ||
+          storedRole ||
+          null;
 
         if (active) {
           setUserRole(role);
           setAuthenticated(true);
         }
-      } catch {
-        clearAuthSession();
-
+      } catch (error) {
+        /*
+         * Do not immediately destroy a locally valid session because
+         * a temporary /auth/me request failure can otherwise redirect
+         * the user away from the dashboard.
+         */
         if (active) {
-          setAuthenticated(false);
-          setUserRole(null);
+          setAuthenticated(Boolean(getAuthToken()));
+          setUserRole(storedRole);
         }
       } finally {
         if (active) {
@@ -49,7 +66,7 @@ function ProtectedRoute({ allowedRole, children }) {
     return () => {
       active = false;
     };
-  }, []);
+  }, [storedRole]);
 
   if (checking) {
     return (
@@ -60,6 +77,7 @@ function ProtectedRoute({ allowedRole, children }) {
   }
 
   if (!authenticated) {
+    clearAuthSession();
     return <Navigate to="/" replace state={{ from: location.pathname }} />;
   }
 
