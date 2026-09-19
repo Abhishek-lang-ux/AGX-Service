@@ -93,7 +93,6 @@ function AppLayout() {
             PROTECTED ROUTES
         ========================= */}
 
-        <Route element={<ProtectedRoute />}>
 
         <Route
           path="/dashboard"
@@ -108,65 +107,64 @@ function AppLayout() {
 
         <Route
           path="/myrequests"
-          element={<MyRequests />}
+          element={<ProtectedRoute><MyRequests /></ProtectedRoute>}
         />
 
         <Route
           path="/request-details/:id"
-          element={<RequestDetails />}
+          element={<ProtectedRoute><RequestDetails /></ProtectedRoute>}
         />
 
         <Route
           path="/documents"
-          element={<Documents />}
+          element={<ProtectedRoute><Documents /></ProtectedRoute>}
         />
 
         <Route
           path="/new-request"
-          element={<NewRequest />}
+          element={<ProtectedRoute><NewRequest /></ProtectedRoute>}
         />
 
         <Route
           path="/payments"
-          element={<Payments />}
+          element={<ProtectedRoute><Payments /></ProtectedRoute>}
         />
 
         <Route
           path="/profile"
-          element={<Profile />}
+          element={<ProtectedRoute><Profile /></ProtectedRoute>}
         />
 
         <Route
           path="/profile/edit"
-          element={<EditProfile />}
+          element={<ProtectedRoute><EditProfile /></ProtectedRoute>}
         />
 
         <Route
           path="/settings"
-          element={<AccountSettings />}
+          element={<ProtectedRoute><AccountSettings /></ProtectedRoute>}
         />
 
         <Route
           path="/change-password"
-          element={<ChangePassword />}
+          element={<ProtectedRoute><ChangePassword /></ProtectedRoute>}
         />
 
         <Route
           path="/two-factor-auth"
-          element={<TwoFactorAuth />}
+          element={<ProtectedRoute><TwoFactorAuth /></ProtectedRoute>}
         />
 
         <Route
           path="/active-sessions"
-          element={<ActiveSessions />}
+          element={<ProtectedRoute><ActiveSessions /></ProtectedRoute>}
         />
 
         <Route
           path="/notifications"
-          element={<Notifications />}
+          element={<ProtectedRoute><Notifications /></ProtectedRoute>}
         />
 
-      </Route>
 
 
       {/* =========================
