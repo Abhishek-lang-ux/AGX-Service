@@ -15,6 +15,7 @@ import {
   getSuperAdminRequests,
   getSuperAdminRequest,
   updateSuperAdminRequestStatus,
+  uploadSuperAdminFinalReceipt,
 } from "../lib/api";
 
 const STATUS_OPTIONS = [
@@ -36,7 +37,6 @@ function formatDate(value) {
   try {
     return new Date(value).toLocaleString("en-IN", {
       day: "2-digit",
-      month: "short",
       year: "numeric",
       hour: "2-digit",
       minute: "2-digit",
@@ -57,6 +57,7 @@ export default function SuperAdminRequests() {
 
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+  const [receiptUploading, setReceiptUploading] = useState(false);
 
   const [selected, setSelected] = useState(null);
   const [error, setError] = useState("");
@@ -108,6 +109,26 @@ export default function SuperAdminRequests() {
       setSelected(data.request);
     } catch (err) {
       setError(err.message || "Unable to open request.");
+    }
+  }
+
+  async function uploadFinalReceipt(file) {
+    if (!selected || selected.status !== "completed" || !file) return;
+
+    try {
+      setReceiptUploading(true);
+      setError("");
+
+      await uploadSuperAdminFinalReceipt(selected.id, file, false);
+
+      const data = await getSuperAdminRequest(selected.id);
+      setSelected(data.request);
+
+      alert("Final receipt uploaded successfully.");
+    } catch (err) {
+      setError(err.message || "Unable to upload final receipt.");
+    } finally {
+      setReceiptUploading(false);
     }
   }
 
@@ -438,6 +459,32 @@ export default function SuperAdminRequests() {
                 <p>No documents uploaded.</p>
               )}
             </div>
+
+            {selected.status === "completed" && (
+              <div className="request-detail-section">
+                <span>FINAL RECEIPT</span>
+                <h3>Upload Final Receipt</h3>
+                <p>
+                  Upload the final receipt for this completed request. PDF, JPG and PNG files up to 10 MB are supported.
+                </p>
+
+                <label className="request-view-btn" style={{ display: "inline-flex", cursor: receiptUploading ? "not-allowed" : "pointer" }}>
+                  <Upload size={16} />
+                  {receiptUploading ? "Uploading..." : "Upload Final Receipt"}
+                  <input
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
+                    hidden
+                    disabled={receiptUploading}
+                    onChange={(event) => {
+                      const file = event.target.files?.[0];
+                      if (file) uploadFinalReceipt(file);
+                      event.target.value = "";
+                    }}
+                  />
+                </label>
+              </div>
+            )}
 
             <div className="request-detail-section">
               <span>UPDATE REQUEST STATUS</span>

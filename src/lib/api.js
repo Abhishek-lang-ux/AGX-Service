@@ -777,6 +777,11 @@ export async function updateSuperAdminUserRole(
    SUPERADMIN RETAILERS
 ========================================================= */
 
+export async function getSuperAdminRetailers() {
+  return apiRequest("/superadmin/retailers");
+}
+
+
 export async function getPendingRetailers() {
   return apiRequest("/superadmin/retailers/pending");
 }
@@ -878,6 +883,21 @@ export async function updateSuperAdminRequestStatus(
   );
 }
 
+export async function uploadSuperAdminFinalReceipt(requestId, file, retailer = false) {
+  const formData = new FormData();
+  formData.append("finalReceipt", file);
+
+  const endpoint = retailer
+    ? `/superadmin/retailers/requests/${encodeURIComponent(requestId)}/final-receipt`
+    : `/superadmin/requests/${encodeURIComponent(requestId)}/final-receipt`;
+
+  return apiRequest(endpoint, {
+    method: "POST",
+    body: formData,
+  });
+}
+
+
 export async function forgotPassword(email) {
   return apiRequest("/auth/forgot-password", {
     method: "POST",
@@ -903,4 +923,114 @@ export async function updateRetailerServicePrice(
       body: JSON.stringify({ retailerPrice }),
     }
   );
+}
+
+/* =========================================================
+   USER DOCUMENT VIEW / DOWNLOAD
+========================================================= */
+
+export async function openRequestDocument(documentId) {
+  const token = getAuthToken();
+  const headers = {};
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  const response = await fetch(
+    `${API_BASE_URL}/documents/${encodeURIComponent(documentId)}/download`,
+    {
+      method: "GET",
+      headers,
+    }
+  );
+
+  if (!response.ok) {
+    let message = "Unable to open document.";
+
+    try {
+      const data = await response.json();
+      message = data.message || message;
+    } catch {
+      // Ignore JSON parsing error
+    }
+
+    throw new Error(message);
+  }
+
+  const blob = await response.blob();
+  const blobUrl = URL.createObjectURL(blob);
+
+  const newWindow = window.open(
+    blobUrl,
+    "_blank",
+    "noopener,noreferrer"
+  );
+
+  setTimeout(() => {
+    URL.revokeObjectURL(blobUrl);
+  }, 60000);
+
+  return newWindow;
+}
+
+export async function downloadRequestDocument(documentId) {
+  const token = getAuthToken();
+  const headers = {};
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  const response = await fetch(
+    `${API_BASE_URL}/documents/${encodeURIComponent(documentId)}/download`,
+    {
+      method: "GET",
+      headers,
+    }
+  );
+
+  if (!response.ok) {
+    let message = "Unable to download document.";
+
+    try {
+      const data = await response.json();
+      message = data.message || message;
+    } catch {
+      // Ignore JSON parsing error
+    }
+
+    throw new Error(message);
+  }
+
+  const blob = await response.blob();
+  const blobUrl = URL.createObjectURL(blob);
+
+  const contentDisposition =
+    response.headers.get("Content-Disposition") || "";
+
+  let fileName = "document";
+
+  const fileNameMatch = contentDisposition.match(
+    /filename\*?=(?:UTF-8'')?["']?([^;"']+)["']?/i
+  );
+
+  if (fileNameMatch?.[1]) {
+    try {
+      fileName = decodeURIComponent(fileNameMatch[1]);
+    } catch {
+      fileName = fileNameMatch[1];
+    }
+  }
+
+  const link = document.createElement("a");
+  link.href = blobUrl;
+  link.download = fileName;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+
+  setTimeout(() => {
+    URL.revokeObjectURL(blobUrl);
+  }, 60000);
 }

@@ -39,13 +39,13 @@ function SuperAdminRetailerDocuments() {
       );
     } catch (err) {
       console.error(
-        "Load SuperAdmin documents error:",
+        "Load Retailer documents error:",
         err
       );
 
       setError(
         err?.message ||
-          "Unable to load client documents."
+          "Unable to load retailer documents."
       );
     } finally {
       setLoading(false);
@@ -61,10 +61,10 @@ function SuperAdminRetailerDocuments() {
   }, []);
 
   /* =========================================================
-     CLIENT NAME
+     RETAILER NAME
   ========================================================= */
 
-  const getClientName = (document) => {
+  const getRetailerName = (document) => {
     const name = [
       document?.firstName,
       document?.lastName,
@@ -73,7 +73,7 @@ function SuperAdminRetailerDocuments() {
       .join(" ")
       .trim();
 
-    return name || "Client";
+    return name || "Retailer";
   };
 
   /* =========================================================
@@ -82,7 +82,7 @@ function SuperAdminRetailerDocuments() {
 
   const filteredDocuments = documents.filter(
     (document) => {
-      const clientName = getClientName(document);
+      const retailerName = getRetailerName(document);
 
       const text = [
         document.originalName,
@@ -94,7 +94,7 @@ function SuperAdminRetailerDocuments() {
         document.phone,
         document.firstName,
         document.lastName,
-        clientName,
+        retailerName,
       ]
         .filter(Boolean)
         .join(" ")
@@ -203,11 +203,11 @@ function SuperAdminRetailerDocuments() {
             DOCUMENT MANAGEMENT
           </span>
 
-          <h1>Client Documents</h1>
+          <h1>Retailer Documents</h1>
 
           <p>
             Review and access documents submitted
-            by clients.
+            by retailers.
           </p>
         </div>
 
@@ -279,7 +279,7 @@ function SuperAdminRetailerDocuments() {
 
           <p>
             Please wait while AGX loads
-            client documents.
+            retailer documents.
           </p>
 
         </div>
@@ -324,13 +324,13 @@ function SuperAdminRetailerDocuments() {
           <h2>
             {search
               ? "No Documents Found"
-              : "No Client Documents"}
+              : "No Retailer Documents"}
           </h2>
 
           <p>
             {search
               ? "No documents match your search."
-              : "Client submitted documents will appear here."}
+              : "Retailer submitted documents will appear here."}
           </p>
 
         </div>
@@ -348,7 +348,7 @@ function SuperAdminRetailerDocuments() {
             <thead>
               <tr>
                 <th>Document</th>
-                <th>Client</th>
+                <th>Retailer</th>
                 <th>Request</th>
                 <th>Service</th>
                 <th>Status</th>
@@ -362,8 +362,8 @@ function SuperAdminRetailerDocuments() {
               {filteredDocuments.map(
                 (document) => {
 
-                  const clientName =
-                    getClientName(document);
+                  const retailerName =
+                    getRetailerName(document);
 
                   return (
                     <tr
@@ -402,7 +402,7 @@ function SuperAdminRetailerDocuments() {
                       </td>
 
                       {/* =================================
-                          CLIENT
+                          RETAILER
                       ================================= */}
 
                       <td>
@@ -410,7 +410,7 @@ function SuperAdminRetailerDocuments() {
                         <div className="superadmin-client-cell">
 
                           <strong>
-                            {clientName}
+                            {retailerName}
                           </strong>
 
                           {document.userEmail && (

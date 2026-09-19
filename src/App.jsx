@@ -30,6 +30,7 @@ import SuperAdminServices from "./pages/SuperAdminServices";
 import SuperAdminRequests from "./pages/SuperAdminRequests";
 import SuperAdminDocuments from "./pages/SuperAdminDocuments";
 import SuperAdminPayments from "./pages/SuperAdminPayments";
+import SuperAdminRetailers from "./pages/SuperAdminRetailers";
 import SuperAdminRetailerRequests from "./pages/SuperAdminRetailerRequests";
 import SuperAdminRetailerDocuments from "./pages/SuperAdminRetailerDocuments";
 import SuperAdminRetailerPayments from "./pages/SuperAdminRetailerPayments";
@@ -111,7 +112,7 @@ function AppLayout() {
         />
 
         <Route
-          path="/request-details"
+          path="/request-details/:id"
           element={<RequestDetails />}
         />
 

@@ -15,6 +15,7 @@ import {
   getSuperAdminRetailerRequests,
   getSuperAdminRetailerRequest,
   updateSuperAdminRetailerRequestStatus,
+  uploadSuperAdminFinalReceipt,
 } from "../lib/api";
 
 const STATUS_OPTIONS = [
@@ -56,6 +57,7 @@ export default function SuperAdminRetailerRequests() {
   const [status, setStatus] = useState("");
 
   const [loading, setLoading] = useState(true);
+  const [receiptUploading, setReceiptUploading] = useState(false);
   const [updating, setUpdating] = useState(false);
 
   const [selected, setSelected] = useState(null);
@@ -108,6 +110,26 @@ export default function SuperAdminRetailerRequests() {
       setSelected(data.request);
     } catch (err) {
       setError(err.message || "Unable to open request.");
+    }
+  }
+
+  async function uploadFinalReceipt(file) {
+    if (!selected || selected.status !== "completed" || !file) return;
+
+    try {
+      setReceiptUploading(true);
+      setError("");
+
+      await uploadSuperAdminFinalReceipt(selected.id, file, true);
+
+      const data = await getSuperAdminRetailerRequest(selected.id);
+      setSelected(data.request);
+
+      alert("Final receipt uploaded successfully.");
+    } catch (err) {
+      setError(err.message || "Unable to upload final receipt.");
+    } finally {
+      setReceiptUploading(false);
     }
   }
 
@@ -440,6 +462,38 @@ export default function SuperAdminRetailerRequests() {
             </div>
 
             <div className="request-detail-section">
+              {selected.status === "completed" && (
+                <div className="request-detail-section">
+                  <span>FINAL RECEIPT</span>
+                  <h3>Upload Final Receipt</h3>
+                  <p>
+                    Upload the final receipt for this completed retailer request. PDF, JPG and PNG files up to 10 MB are supported.
+                  </p>
+
+                  <label
+                    className="request-view-btn"
+                    style={{
+                      display: "inline-flex",
+                      cursor: receiptUploading ? "not-allowed" : "pointer",
+                    }}
+                  >
+                    <FileText size={16} />
+                    {receiptUploading ? "Uploading..." : "Upload Final Receipt"}
+                    <input
+                      type="file"
+                      accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
+                      hidden
+                      disabled={receiptUploading}
+                      onChange={(event) => {
+                        const file = event.target.files?.[0];
+                        if (file) uploadFinalReceipt(file);
+                        event.target.value = "";
+                      }}
+                    />
+                  </label>
+                </div>
+              )}
+
               <span>UPDATE REQUEST STATUS</span>
 
               <div className="request-status-actions">
