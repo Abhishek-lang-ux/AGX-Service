@@ -24,16 +24,28 @@ function ProtectedRoute({ allowedRole, children }) {
 
       try {
         const meData = await apiRequest("/auth/me");
-        if (active) { setUserRole(meData?.user?.role || meData?.role || null); setAuthenticated(true); }
+        const role = meData?.user?.role || meData?.role || null;
+
+        if (active) {
+          setUserRole(role);
+          setAuthenticated(true);
+        }
       } catch {
         clearAuthSession();
-        if (active) setAuthenticated(false);
+
+        if (active) {
+          setAuthenticated(false);
+          setUserRole(null);
+        }
       } finally {
-        if (active) setChecking(false);
+        if (active) {
+          setChecking(false);
+        }
       }
     }
 
     validateSession();
+
     return () => {
       active = false;
     };
@@ -52,7 +64,15 @@ function ProtectedRoute({ allowedRole, children }) {
   }
 
   if (allowedRole && userRole !== allowedRole) {
-    return <Navigate to={userRole === "retailer" ? "/retailer/dashboard" : "/dashboard"} replace />;
+    if (userRole === "retailer") {
+      return <Navigate to="/retailer/dashboard" replace />;
+    }
+
+    if (userRole === "client") {
+      return <Navigate to="/dashboard" replace />;
+    }
+
+    return <Navigate to="/" replace />;
   }
 
   return children || <Outlet />;
