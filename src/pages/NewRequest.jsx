@@ -562,7 +562,7 @@ Email: ${emailId.trim()}`,
           <div>
             <span className="new-request-eyebrow">
               <BriefcaseBusiness size={14} />
-              CLIENT PORTAL
+              {getStoredUserRole() === "retailer" ? "RETAILER PORTAL" : "CLIENT PORTAL"}
             </span>
 
             <h1>Start a New Request</h1>

@@ -18,6 +18,17 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 import "./myrequests.css";
 
+function getStoredUserRole() {
+  const storedUser = localStorage.getItem("agx_user") || sessionStorage.getItem("agx_user");
+  try {
+    const parsedUser = storedUser ? JSON.parse(storedUser) : null;
+    return parsedUser?.role || parsedUser?.user?.role || "client";
+  } catch {
+    return "client";
+  }
+}
+
+
 /* =========================================================
    STATUS CONFIG
 ========================================================= */
@@ -80,6 +91,8 @@ const statusMeta = {
   },
 };
 
+
+
 /* =========================================================
    HELPERS
 ========================================================= */
@@ -132,6 +145,8 @@ function getStatusMeta(status) {
     }
   );
 }
+
+
 
 /* =========================================================
    COMPONENT
@@ -427,7 +442,7 @@ function MyRequests() {
           <div>
             <span className="requests-eyebrow">
               <FileText size={14} />
-              CLIENT PORTAL
+              {getStoredUserRole() === "retailer" ? "RETAILER PORTAL" : "CLIENT PORTAL"}
             </span>
 
             <h1>My Requests</h1>

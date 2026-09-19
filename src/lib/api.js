@@ -358,6 +358,35 @@ export async function getSuperAdminDashboard() {
  * Get all client documents
  */
 
+export async function getSuperAdminRetailerDocuments() {
+  return apiRequest("/superadmin/retailers/documents");
+}
+
+export async function getSuperAdminRetailerDocumentView(documentId) {
+  return apiRequest(
+    `/superadmin/retailers/documents/${encodeURIComponent(documentId)}/view`
+  );
+}
+
+export async function getSuperAdminRetailerPayments() {
+  return apiRequest("/superadmin/retailers/payments");
+}
+
+export async function updateSuperAdminRetailerPaymentStatus(
+  paymentId,
+  status,
+  rejectionReason = ""
+) {
+  return apiRequest(
+    `/superadmin/retailers/payments/${encodeURIComponent(paymentId)}/status`,
+    {
+      method: "PATCH",
+      body: JSON.stringify({ status, rejectionReason }),
+    }
+  );
+}
+
+
 export async function getSuperAdminDocuments() {
   return apiRequest("/superadmin/documents");
 }
@@ -765,6 +794,47 @@ export async function updateRetailerApproval(retailerId, action) {
 /* =========================================================
    SUPERADMIN REQUESTS
 ========================================================= */
+
+export async function getSuperAdminRetailerRequests({
+  search = "",
+  status = "",
+} = {}) {
+  const params = new URLSearchParams();
+
+  if (search.trim()) {
+    params.set("search", search.trim());
+  }
+
+  if (status) {
+    params.set("status", status);
+  }
+
+  const query = params.toString();
+
+  return apiRequest(
+    `/superadmin/retailers/requests${query ? `?${query}` : ""}`
+  );
+}
+
+export async function getSuperAdminRetailerRequest(requestId) {
+  return apiRequest(
+    `/superadmin/retailers/requests/${encodeURIComponent(requestId)}`
+  );
+}
+
+export async function updateSuperAdminRetailerRequestStatus(
+  requestId,
+  status
+) {
+  return apiRequest(
+    `/superadmin/retailers/requests/${encodeURIComponent(requestId)}/status`,
+    {
+      method: "PATCH",
+      body: JSON.stringify({ status }),
+    }
+  );
+}
+
 
 export async function getSuperAdminRequests({
   search = "",

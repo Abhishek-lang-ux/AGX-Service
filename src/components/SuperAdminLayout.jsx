@@ -1,6 +1,7 @@
 import {
   LayoutDashboard,
   Users,
+  Store,
   UserCog,
   BriefcaseBusiness,
   ClipboardList,
@@ -57,6 +58,26 @@ const menuItems = [
   {
     label: "Payments",
     path: "/superadmin/payments",
+    icon: CreditCard,
+  },
+  {
+    label: "Retailers",
+    path: "/superadmin/retailers",
+    icon: Store,
+  },
+  {
+    label: "Retailer Requests",
+    path: "/superadmin/retailers/requests",
+    icon: ClipboardList,
+  },
+  {
+    label: "Retailer Documents",
+    path: "/superadmin/retailers/documents",
+    icon: FileCheck2,
+  },
+  {
+    label: "Retailer Payments",
+    path: "/superadmin/retailers/payments",
     icon: CreditCard,
   },
   {

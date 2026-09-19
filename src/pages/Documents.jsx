@@ -66,6 +66,16 @@ const initialDocuments = [
   },
 ];
 
+function getStoredUserRole() {
+  const storedUser = localStorage.getItem("agx_user") || sessionStorage.getItem("agx_user");
+  try {
+    const parsedUser = storedUser ? JSON.parse(storedUser) : null;
+    return parsedUser?.role || parsedUser?.user?.role || "client";
+  } catch {
+    return "client";
+  }
+}
+
 function Documents() {
   const [documents, setDocuments] = useState(initialDocuments);
   const [search, setSearch] = useState("");
@@ -122,7 +132,7 @@ function Documents() {
           <div>
             <span className="documents-eyebrow">
               <FolderOpen size={14} />
-              CLIENT PORTAL
+              {getStoredUserRole() === "retailer" ? "RETAILER PORTAL" : "CLIENT PORTAL"}
             </span>
             <h1>My Documents</h1>
             <p>Securely manage the documents you have submitted to AGX.</p>

@@ -30,6 +30,9 @@ import SuperAdminServices from "./pages/SuperAdminServices";
 import SuperAdminRequests from "./pages/SuperAdminRequests";
 import SuperAdminDocuments from "./pages/SuperAdminDocuments";
 import SuperAdminPayments from "./pages/SuperAdminPayments";
+import SuperAdminRetailerRequests from "./pages/SuperAdminRetailerRequests";
+import SuperAdminRetailerDocuments from "./pages/SuperAdminRetailerDocuments";
+import SuperAdminRetailerPayments from "./pages/SuperAdminRetailerPayments";
 import SuperAdminNotifications from "./pages/SuperAdminNotifications";
 import SuperAdminSettings from "./pages/SuperAdminSettings";
 import Documents from "./pages/Documents";
@@ -202,10 +205,25 @@ function AppLayout() {
       element={<SuperAdminDocuments />}
     />
 
-    <Route
-      path="/superadmin/payments"
-      element={<SuperAdminPayments />}
-    />
+      <Route
+        path="/superadmin/payments"
+        element={<SuperAdminPayments />}
+      />
+
+      <Route
+        path="/superadmin/retailers/requests"
+        element={<SuperAdminRetailerRequests />}
+      />
+
+      <Route
+        path="/superadmin/retailers/documents"
+        element={<SuperAdminRetailerDocuments />}
+      />
+
+      <Route
+        path="/superadmin/retailers/payments"
+        element={<SuperAdminRetailerPayments />}
+      />
 
     <Route
       path="/superadmin/notifications"
