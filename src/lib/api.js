@@ -1063,3 +1063,37 @@ export async function downloadRequestDocument(documentId) {
     URL.revokeObjectURL(blobUrl);
   }, 60000);
 }
+
+/* =========================================================
+   RETAILER - DISTRIBUTOR MAPPING
+========================================================= */
+
+export async function getRetailerDistributorMapping() {
+  return apiRequest("/superadmin/retailer-distributor-mapping");
+}
+
+export async function assignRetailerDistributor(retailerId, distributorId) {
+  return apiRequest(
+    `/superadmin/retailers/${encodeURIComponent(retailerId)}/distributor`,
+    {
+      method: "PATCH",
+      body: JSON.stringify({
+        distributorId:
+          distributorId === "" ||
+          distributorId === null ||
+          distributorId === undefined
+            ? null
+            : Number(distributorId),
+      }),
+    }
+  );
+}
+
+
+/* =========================================================
+   DISTRIBUTOR MANAGEMENT
+========================================================= */
+
+export async function getDistributors() {
+  return apiRequest("/superadmin/distributors");
+}

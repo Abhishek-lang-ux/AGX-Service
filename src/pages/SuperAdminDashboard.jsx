@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import { getSuperAdminDashboard, getPendingRetailers, updateRetailerApproval } from "../lib/api.js";
 
 import DistributorManagement from "../components/DistributorManagement.jsx";
+import RetailerDistributorMapping from "../components/RetailerDistributorMapping.jsx";
 import "./superadmin.css";
 
 function formatCurrency(value) {
@@ -426,6 +427,7 @@ function SuperAdminDashboard() {
         </section>
 
         <DistributorManagement />
+        <RetailerDistributorMapping />
 
         {/* PENDING RETAILER APPLICATIONS */}
         <section className="superadmin-panel retailer-applications-panel">
