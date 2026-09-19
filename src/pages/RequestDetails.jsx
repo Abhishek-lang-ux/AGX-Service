@@ -419,7 +419,7 @@ function RequestDetails() {
                   <div className="timeline-content">
                     <div className="timeline-title-row">
                       <h3>Completed</h3>
-                      {status === "completed" && (
+                      {status === "completed" && finalReceipt && (
                         <span>Completed</span>
                       )}
                     </div>
@@ -517,7 +517,7 @@ function RequestDetails() {
               </Link>
             </div>
 
-            {status === "completed" && (
+            {status === "completed" && finalReceipt && (
               <div className="details-panel">
                 <div className="details-panel-heading">
                   <div>

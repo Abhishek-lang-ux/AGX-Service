@@ -461,71 +461,63 @@ export default function SuperAdminRetailerRequests() {
               )}
             </div>
 
-            <div className="request-detail-section">
-              {selected.status === "completed" && (
-                <div className="request-detail-section">
-                  <span>FINAL RECEIPT</span>
-                  <h3>Upload Final Receipt</h3>
-                  <p>
-                    Upload the final receipt for this completed retailer request. PDF, JPG and PNG files up to 10 MB are supported.
-                  </p>
-
-                  <label
-                    className="request-view-btn"
-                    style={{
-                      display: "inline-flex",
-                      cursor: receiptUploading ? "not-allowed" : "pointer",
+            {selected.status === "completed" && (
+              <div className="request-detail-section">
+                <span>FINAL RECEIPT</span>
+                <h3>Upload Final Receipt</h3>
+                <p>
+                  Upload the final receipt for this completed retailer request. PDF, JPG and PNG files up to 10 MB are supported.
+                </p>
+                <label
+                  className="request-view-btn"
+                  style={{
+                    display: "inline-flex",
+                    cursor: receiptUploading ? "not-allowed" : "pointer",
+                  }}
+                >
+                  <FileText size={16} />
+                  {receiptUploading ? "Uploading..." : "Upload Final Receipt"}
+                  <input
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
+                    hidden
+                    disabled={receiptUploading}
+                    onChange={(event) => {
+                      const file = event.target.files?.[0];
+                      if (file) uploadFinalReceipt(file);
+                      event.target.value = "";
                     }}
-                  >
-                    <FileText size={16} />
-                    {receiptUploading ? "Uploading..." : "Upload Final Receipt"}
-                    <input
-                      type="file"
-                      accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
-                      hidden
-                      disabled={receiptUploading}
-                      onChange={(event) => {
-                        const file = event.target.files?.[0];
-                        if (file) uploadFinalReceipt(file);
-                        event.target.value = "";
-                      }}
-                    />
-                  </label>
-                </div>
-              )}
-
-              <span>UPDATE REQUEST STATUS</span>
-
-              <div className="request-status-actions">
-                {STATUS_OPTIONS.map(
-                  ([value, label]) => (
-                    <button
-                      key={value}
-                      type="button"
-                      className={
-                        selected.status === value
-                          ? "active"
-                          : ""
-                      }
-                      disabled={updating}
-                      onClick={() =>
-                        changeStatus(
-                          selected.id,
-                          value
-                        )
-                      }
-                    >
-                      {value === "completed" ? (
-                        <CheckCircle2 size={15} />
-                      ) : (
-                        <Clock3 size={15} />
-                      )}
-
-                      {label}
-                    </button>
-                  )
-                )}
+                  />
+                </label>
               </div>
+            )}
+
+            <div className="request-detail-section">
+              <span>UPDATE REQUEST STATUS</span>
+              <div className="request-status-actions">
+                {STATUS_OPTIONS.map(([value, label]) => (
+                  <button
+                    key={value}
+                    type="button"
+                    className={selected.status === value ? "active" : ""}
+                    disabled={updating}
+                    onClick={() => changeStatus(selected.id, value)}
+                  >
+                    {value === "completed" ? (
+                      <CheckCircle2 size={15} />
+                    ) : (
+                      <Clock3 size={15} />
+                    )}
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="request-last-update">
+              <User size={15} />
+              Last updated:{" "}
+              {formatDate(selected.updatedAt)}
             </div>
 
             <div className="request-last-update">
