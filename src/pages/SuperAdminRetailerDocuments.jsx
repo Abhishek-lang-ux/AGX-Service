@@ -9,8 +9,8 @@ import {
 
 import {
   getSuperAdminRetailerDocuments,
-  openSuperAdminDocument,
-  downloadSuperAdminDocument,
+  openSuperAdminRetailerDocument,
+  downloadSuperAdminRetailerDocument,
 } from "../lib/api.js";
 
 import "./superAdminDocuments.css";
@@ -151,7 +151,7 @@ function SuperAdminRetailerDocuments() {
 
   const handleView = async (id) => {
     try {
-      await openSuperAdminDocument(id);
+      await openSuperAdminRetailerDocument(id);
     } catch (err) {
       console.error(
         "View document error:",
@@ -171,7 +171,7 @@ function SuperAdminRetailerDocuments() {
 
   const handleDownload = async (id) => {
     try {
-      await downloadSuperAdminDocument(id);
+      await downloadSuperAdminRetailerDocument(id);
     } catch (err) {
       console.error(
         "Download document error:",

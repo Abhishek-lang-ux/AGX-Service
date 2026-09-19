@@ -212,6 +212,11 @@ function AppLayout() {
       />
 
       <Route
+        path="/superadmin/retailers"
+        element={<SuperAdminRetailers />}
+      />
+
+      <Route
         path="/superadmin/retailers/requests"
         element={<SuperAdminRetailerRequests />}
       />

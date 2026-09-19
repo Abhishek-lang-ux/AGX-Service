@@ -362,11 +362,44 @@ export async function getSuperAdminRetailerDocuments() {
   return apiRequest("/superadmin/retailers/documents");
 }
 
-export async function getSuperAdminRetailerDocumentView(documentId) {
-  return apiRequest(
-    `/superadmin/retailers/documents/${encodeURIComponent(documentId)}/view`
-  );
+export async function openSuperAdminRetailerDocument(documentId) {
+  const token = getAuthToken();
+  const headers = {};
+  if (token) headers.Authorization = `Bearer ${token}`;
+  const response = await fetch(`${API_BASE_URL}/superadmin/retailers/documents/${encodeURIComponent(documentId)}/view`, { method: "GET", headers });
+  if (!response.ok) {
+    let message = "Unable to open retailer document.";
+    try { const data = await response.json(); message = data.message || message; } catch {}
+    throw new Error(message);
+  }
+  const blob = await response.blob();
+  const blobUrl = URL.createObjectURL(blob);
+  const newWindow = window.open(blobUrl, "_blank", "noopener,noreferrer");
+  setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
+  return newWindow;
 }
+
+export async function downloadSuperAdminRetailerDocument(documentId) {
+  const token = getAuthToken();
+  const headers = {};
+  if (token) headers.Authorization = `Bearer ${token}`;
+  const response = await fetch(`${API_BASE_URL}/superadmin/retailers/documents/${encodeURIComponent(documentId)}/download`, { method: "GET", headers });
+  if (!response.ok) {
+    let message = "Unable to download retailer document.";
+    try { const data = await response.json(); message = data.message || message; } catch {}
+    throw new Error(message);
+  }
+  const blob = await response.blob();
+  const blobUrl = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = blobUrl;
+  link.download = "retailer-document";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
+}
+
 
 export async function getSuperAdminRetailerPayments() {
   return apiRequest("/superadmin/retailers/payments");
