@@ -30,6 +30,14 @@ function ProtectedRoute({ allowedRole, children }) {
     if (userRole === "client") {
       return <Navigate to="/dashboard" replace />;
     }
+
+    if (userRole === "distributor") {
+      return <Navigate to="/distributor/dashboard" replace />;
+    }
+
+    if (userRole === "superadmin") {
+      return <Navigate to="/superadmin" replace />;
+    }
   }
 
   return children || <Outlet />;

@@ -34,7 +34,17 @@ function Login() {
       });
 
       setAuthSession(data.token, data.user, remember);
-      navigate(data.user?.role === "retailer" ? "/retailer/dashboard" : "/dashboard", { replace: true });
+      const role = data.user?.role;
+
+      if (role === "superadmin") {
+        navigate("/superadmin", { replace: true });
+      } else if (role === "distributor") {
+        navigate("/distributor/dashboard", { replace: true });
+      } else if (role === "retailer") {
+        navigate("/retailer/dashboard", { replace: true });
+      } else {
+        navigate("/dashboard", { replace: true });
+      }
     } catch (requestError) {
       setError(requestError.message || "Unable to sign in. Please try again.");
     } finally {

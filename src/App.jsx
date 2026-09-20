@@ -19,6 +19,7 @@ import RetailerRegister from "./pages/RetailerRegister";
 
 import Dashboard from "./pages/Dashboard";
 import RetailerDashboard from "./pages/RetailerDashboard";
+import DistributorDashboard from "./pages/DistributorDashboard";
 import MyRequests from "./pages/MyRequests";
 import RequestDetails from "./pages/RequestDetails";
 import SuperAdminDashboard from "./pages/SuperAdminDashboard";
@@ -103,6 +104,11 @@ function AppLayout() {
         <Route
           path="/retailer/dashboard"
           element={<ProtectedRoute allowedRole="retailer"><RetailerDashboard /></ProtectedRoute>}
+        />
+
+        <Route
+          path="/distributor/dashboard"
+          element={<ProtectedRoute allowedRole="distributor"><DistributorDashboard /></ProtectedRoute>}
         />
 
         <Route

@@ -17,6 +17,7 @@ import { getSuperAdminDashboard, getPendingRetailers, updateRetailerApproval } f
 
 import DistributorManagement from "../components/DistributorManagement.jsx";
 import RetailerDistributorMapping from "../components/RetailerDistributorMapping.jsx";
+import DistributorWithdrawalManagement from "../components/DistributorWithdrawalManagement.jsx";
 import "./superadmin.css";
 
 function formatCurrency(value) {
@@ -428,6 +429,7 @@ function SuperAdminDashboard() {
 
         <DistributorManagement />
         <RetailerDistributorMapping />
+        <DistributorWithdrawalManagement />
 
         {/* PENDING RETAILER APPLICATIONS */}
         <section className="superadmin-panel retailer-applications-panel">

@@ -1097,3 +1097,58 @@ export async function assignRetailerDistributor(retailerId, distributorId) {
 export async function getDistributors() {
   return apiRequest("/superadmin/distributors");
 }
+
+/* =========================================================
+   DISTRIBUTOR - ASSIGNED RETAILERS
+========================================================= */
+
+export async function getAssignedRetailers() {
+  return apiRequest("/distributor/retailers");
+}
+
+/* =========================================================
+   DISTRIBUTOR - WALLET
+========================================================= */
+
+export async function getDistributorBankAccount() {
+  return apiRequest("/distributor/bank-account");
+}
+
+export async function saveDistributorBankAccount(data) {
+  return apiRequest("/distributor/bank-account", {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
+}
+
+export async function createDistributorWithdrawal(amount) {
+  return apiRequest("/distributor/withdrawals", {
+    method: "POST",
+    body: JSON.stringify({ amount }),
+  });
+}
+
+export async function getDistributorWithdrawalRequests() {
+  return apiRequest("/superadmin/distributor-withdrawals");
+}
+
+export async function updateDistributorWithdrawalStatus(
+  withdrawalId,
+  data,
+) {
+  return apiRequest(
+    `/superadmin/distributor-withdrawals/${withdrawalId}/status`,
+    {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    },
+  );
+}
+
+export async function getDistributorWithdrawals() {
+  return apiRequest("/distributor/withdrawals");
+}
+
+export async function getDistributorWallet() {
+  return apiRequest("/distributor/wallet");
+}
