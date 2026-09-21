@@ -22,6 +22,7 @@ function RetailerRegister() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [distributorCode, setDistributorCode] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -32,6 +33,16 @@ function RetailerRegister() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+
+    if (!distributorCode.trim()) {
+      setError("Distributor ID is required.");
+      return;
+    }
+
+    if (!/^AGX-D\d{3,}$/i.test(distributorCode.trim())) {
+      setError("Please enter a valid Distributor ID.");
+      return;
+    }
 
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
@@ -204,6 +215,26 @@ function RetailerRegister() {
                     {error}
                   </div>
                 )}
+
+                <div className="register-field">
+                  <label htmlFor="retailer-register-distributor">
+                    Distributor ID
+                  </label>
+                  <div className="register-input-wrap">
+                    <Store size={16} />
+                    <input
+                      id="retailer-register-distributor"
+                      type="text"
+                      placeholder="Enter Distributor ID (e.g. AGX-D001)"
+                      value={distributorCode}
+                      onChange={(e) =>
+                        setDistributorCode(e.target.value.toUpperCase())
+                      }
+                      autoComplete="off"
+                      required
+                    />
+                  </div>
+                </div>
 
                 <div className="register-field">
                   <label htmlFor="retailer-register-name">Full Name</label>
