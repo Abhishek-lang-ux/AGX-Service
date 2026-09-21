@@ -10,6 +10,7 @@ import {
 import { useEffect, useState } from "react";
 import {
   apiRequest,
+  getDistributorWallet,
   getAssignedRetailers,
 } from "../lib/api.js";
 import "./dashboard.css";
