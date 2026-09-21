@@ -918,3 +918,97 @@
   width: 100%;
   min-width: 0;
 }
+
+/* =========================================================
+   FINAL DISTRIBUTOR WITHDRAWAL LAYOUT
+========================================================= */
+
+.withdrawal-content-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(360px, 0.9fr);
+  gap: 24px;
+  width: 100%;
+  align-items: start;
+}
+
+.withdrawal-content-grid > .dashboard-primary {
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.withdrawal-content-grid > .dashboard-primary > .request-card {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.withdrawal-content-grid > .dashboard-primary > .request-card + .request-card {
+  margin-top: 20px !important;
+}
+
+.withdrawal-content-grid .dashboard-secondary {
+  min-width: 0;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.withdrawal-content-grid .request-card {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.withdrawal-content-grid input {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.withdrawal-content-grid label {
+  min-width: 0;
+}
+
+.withdrawal-content-grid .request-service {
+  min-width: 0;
+}
+
+.withdrawal-content-grid .request-service > div:last-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.withdrawal-content-grid .request-service span,
+.withdrawal-content-grid .request-service strong {
+  overflow-wrap: anywhere;
+}
+
+.withdrawal-history-full-width {
+  grid-column: 1 / -1;
+  width: 100%;
+  min-width: 0;
+  margin-top: 2px;
+}
+
+.withdrawal-history-full-width .dashboard-section-head {
+  margin-top: 0 !important;
+}
+
+.withdrawal-history-full-width .request-list {
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  .withdrawal-content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .withdrawal-history-full-width {
+    grid-column: auto;
+  }
+}

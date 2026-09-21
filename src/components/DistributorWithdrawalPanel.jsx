@@ -203,7 +203,7 @@ function DistributorWithdrawalPanel({ availableBalance = 0, onWalletRefresh }) {
         </div>
       ) : null}
 
-      <div className="withdrawal-layout">
+      <div className="withdrawal-content-grid">
         <div className="dashboard-primary">
           <div className="request-card">
             <div className="request-card-top">
