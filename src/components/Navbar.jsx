@@ -37,6 +37,7 @@ function Navbar() {
 
   const userRole = profile?.role || getStoredUserRole();
   const isRetailer = userRole === "retailer";
+  const isDistributor = userRole === "distributor";
 
   // Frontend demo authentication state.
   // Backend authentication will replace this later.
@@ -283,13 +284,13 @@ const profilePhoto = normalizeAssetUrl(profile?.avatarPath || "");
 
   <div>
     <strong>{displayName}</strong>
-    <span>{isRetailer ? "Retailer Account" : "Client Account"}</span>
+    <span>{isDistributor ? "Distributor" : isRetailer ? "Retailer Account" : "Client Account"}</span>
   </div>
 </div>
                   <div className="account-dropdown-divider" />
 
                   <Link
-                    to={isRetailer ? "/retailer/dashboard" : "/dashboard"}
+                    to={isDistributor ? "/distributor/dashboard" : isRetailer ? "/retailer/dashboard" : "/dashboard"}
                     className="account-menu-item"
                     onClick={closeMenu}
                   >
@@ -315,6 +316,7 @@ const profilePhoto = normalizeAssetUrl(profile?.avatarPath || "");
                     <span>Notifications</span>
                     <span className="notification-badge">{unreadNotifications > 99 ? "99+" : unreadNotifications}</span>
                   </Link>
+                    {!isDistributor && (
 
                   <Link
                     to="/myrequests"
@@ -324,6 +326,8 @@ const profilePhoto = normalizeAssetUrl(profile?.avatarPath || "");
                     <FileText size={17} />
                     <span>My Requests</span>
                   </Link>
+                    )}
+                    {!isDistributor && (
 
                   <Link
                     to="/documents"
@@ -333,6 +337,7 @@ const profilePhoto = normalizeAssetUrl(profile?.avatarPath || "");
                     <FolderOpen size={17} />
                     <span>Documents</span>
                   </Link>
+                    )}
 
                   <Link
                     to="/payments"
@@ -431,10 +436,10 @@ const profilePhoto = normalizeAssetUrl(profile?.avatarPath || "");
 
 <div>
   <strong>{displayName}</strong>
-  <span>{isRetailer ? "Retailer Account" : "Client Account"}</span>
+  <span>{isDistributor ? "Distributor" : isRetailer ? "Retailer Account" : "Client Account"}</span>
 </div>
 </div>
-              <Link to={isRetailer ? "/retailer/dashboard" : "/dashboard"} onClick={closeMenu}>
+              <Link to={isDistributor ? "/distributor/dashboard" : isRetailer ? "/retailer/dashboard" : "/dashboard"} onClick={closeMenu}>
                 <LayoutDashboard size={17} />
                 Dashboard
               </Link>
@@ -450,15 +455,23 @@ const profilePhoto = normalizeAssetUrl(profile?.avatarPath || "");
                 <span className="notification-badge">{unreadNotifications > 99 ? "99+" : unreadNotifications}</span>
               </Link>
 
-              <Link to="/myrequests" onClick={closeMenu}>
+
+              {!isDistributor && (<Link to="/myrequests" onClick={closeMenu}>
                 <FileText size={17} />
                 My Requests
               </Link>
 
-              <Link to="/documents" onClick={closeMenu}>
+
+              )}
+
+
+              {!isDistributor && (<Link to="/documents" onClick={closeMenu}>
                 <FolderOpen size={17} />
                 Documents
               </Link>
+
+
+              )}
 
               <Link to="/payments" onClick={closeMenu}>
                 <CreditCard size={17} />
