@@ -32,14 +32,7 @@ function DistributorRegister() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-
-    if (!distributorCode.trim()) {
-      setError("Distributor ID is required.");
-      return;
-    }
-
-    if (!/^AGX-D\d{3,}$/i.test(distributorCode.trim())) {
+    setError("");if (!/^AGX-D\d{3,}$/i.test(distributorCode.trim())) {
       setError("Please enter a valid Distributor ID.");
       return;
     }
@@ -214,7 +207,59 @@ function DistributorRegister() {
                   <div className="auth-form-error" role="alert">
                     {error}
                   </div>
-                )}
+                )}<div className="register-field">
+                  <label htmlFor="distributor-register-name">Full Name</label>
+                  <div className="register-input-wrap">
+                    <UserRound size={16} />
+                    <input
+                      id="distributor-register-name"
+                      type="text"
+                      placeholder="Enter your full name"
+                      autoComplete="name"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="register-two-column">
+                  <div className="register-field">
+                    <label htmlFor="distributor-register-email">
+                      Email Address
+                    </label>
+                    <div className="register-input-wrap">
+                      <Mail size={16} />
+                      <input
+                        id="distributor-register-email"
+                        type="email"
+                        placeholder="you@example.com"
+                        autoComplete="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="register-field">
+                    <label htmlFor="distributor-register-phone">
+                      Phone Number
+                    </label>
+                    <div className="register-input-wrap">
+                      <Phone size={16} />
+                      <input
+                        id="distributor-register-phone"
+                        type="tel"
+                        placeholder="+91 XXXXX XXXXX"
+                        autoComplete="tel"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
 
                 <div className="register-two-column">
                   <div className="register-field">
