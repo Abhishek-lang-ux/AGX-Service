@@ -205,7 +205,7 @@ function DistributorDashboard() {
             <div>
               <span>Available Wallet</span>
               <strong>
-                ₹{Number(stats.availableWallet || 0).toLocaleString("en-IN")}
+                ₹{Number(wallet?.availableBalance || 0).toLocaleString("en-IN")}
               </strong>
               <small>Current balance</small>
             </div>
