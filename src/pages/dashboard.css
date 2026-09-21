@@ -1573,3 +1573,157 @@
     border-radius: 15px !important;
   }
 }
+
+/* =========================================================
+   DISTRIBUTOR COMMISSION PROFILE
+========================================================= */
+
+.distributor-commission-profile-card {
+  position: relative;
+  overflow: hidden;
+  padding: 22px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 18px;
+  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.07);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.distributor-commission-profile-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #16a34a, #22c55e, #84cc16);
+}
+
+.distributor-commission-profile-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.10);
+}
+
+.distributor-commission-profile-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.distributor-commission-profile-top h3 {
+  margin: 5px 0 5px;
+  font-size: 19px;
+  letter-spacing: -.02em;
+}
+
+.distributor-commission-profile-top p {
+  margin: 0;
+  max-width: 290px;
+  font-size: 12px;
+  line-height: 1.55;
+  color: #64748b;
+}
+
+.distributor-commission-rate-badge {
+  flex: 0 0 auto;
+  min-width: 70px;
+  padding: 10px 12px;
+  text-align: center;
+  border-radius: 13px;
+  background: rgba(22, 163, 74, .09);
+  border: 1px solid rgba(22, 163, 74, .16);
+}
+
+.distributor-commission-rate-badge span {
+  display: block;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  color: #15803d;
+}
+
+.distributor-commission-rate-badge strong {
+  display: block;
+  margin-top: 2px;
+  font-size: 22px;
+  color: #15803d;
+}
+
+.distributor-commission-profile-value {
+  margin-top: 22px;
+  padding: 16px;
+  border-radius: 14px;
+  background: rgba(15, 23, 42, .035);
+}
+
+.distributor-commission-profile-value span {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.distributor-commission-profile-value strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 28px;
+  letter-spacing: -.04em;
+  color: #0f172a;
+}
+
+.distributor-commission-profile-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.distributor-commission-profile-meta > div {
+  padding: 12px;
+  border: 1px solid rgba(15, 23, 42, .07);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.distributor-commission-profile-meta span {
+  display: block;
+  font-size: 10px;
+  color: #64748b;
+  font-weight: 700;
+}
+
+.distributor-commission-profile-meta strong {
+  display: block;
+  margin-top: 3px;
+  font-size: 15px;
+}
+
+.distributor-commission-profile-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 13px;
+  padding: 10px 11px;
+  border-radius: 11px;
+  background: rgba(22, 163, 74, .06);
+  color: #166534;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.distributor-commission-profile-note svg {
+  flex: 0 0 auto;
+  margin-top: 1px;
+}
+
+@media (max-width: 700px) {
+  .distributor-commission-profile-top {
+    flex-direction: column;
+  }
+
+  .distributor-commission-rate-badge {
+    align-self: flex-start;
+  }
+}
+

@@ -528,19 +528,37 @@ function DistributorDashboard() {
               </div>
             </div>
 
-            <div className="dashboard-stat-card">
-              <div className="dashboard-stat-icon green">
-                <IndianRupee size={21} />
+              <div className="distributor-commission-profile-card">
+                <div className="distributor-commission-profile-top">
+                  <div>
+                    <span className="dashboard-section-label">COMMISSION RATE</span>
+                    <h3>Distributor Commission</h3>
+                    <p>You earn commission on successful payments made by your assigned retailers.</p>
+                  </div>
+                  <div className="distributor-commission-rate-badge">
+                    <span>RATE</span>
+                    <strong>10%</strong>
+                  </div>
+                </div>
+                <div className="distributor-commission-profile-value">
+                  <span>Total Commission Earned</span>
+                  <strong>₹{Number(wallet?.totalEarned || 0).toLocaleString("en-IN")}</strong>
+                </div>
+                <div className="distributor-commission-profile-meta">
+                  <div>
+                    <span>Available</span>
+                    <strong>₹{Number(wallet?.availableBalance || 0).toLocaleString("en-IN")}</strong>
+                  </div>
+                  <div>
+                    <span>Pending</span>
+                    <strong>₹{Number(wallet?.pendingBalance || 0).toLocaleString("en-IN")}</strong>
+                  </div>
+                </div>
+                <div className="distributor-commission-profile-note">
+                  <IndianRupee size={16} />
+                  <span>Commission is automatically credited to your wallet after a valid retailer payment is marked successful.</span>
+                </div>
               </div>
-
-              <div>
-                <span>Total Commission</span>
-                <strong>
-                  ₹{Number(stats.totalCommission || 0).toLocaleString("en-IN")}
-                </strong>
-                <small>Commission system will be connected next</small>
-              </div>
-            </div>
           </aside>
         </section>
       </div>
