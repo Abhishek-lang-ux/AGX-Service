@@ -30,7 +30,7 @@ function Footer() {
           <h4>Account</h4>
           <Link to="/login">Sign In</Link>
           <Link to="/register">Create Account</Link>
-          <Link to="/retailer/register">Become a Retailer</Link>
+          <a href="/retailer/register">Become a Retailer</a>
           <Link to="/contact">Contact Us</Link>
         </div>
 
