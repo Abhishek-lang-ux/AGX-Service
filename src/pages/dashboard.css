@@ -903,3 +903,18 @@
     gap: 16px;
   }
 }
+
+/* =========================================================
+   DISTRIBUTOR WITHDRAWAL FULL WIDTH
+========================================================= */
+
+.distributor-withdrawal-full-width {
+  grid-column: 1 / -1;
+  width: 100%;
+  min-width: 0;
+}
+
+.distributor-withdrawal-full-width > * {
+  width: 100%;
+  min-width: 0;
+}

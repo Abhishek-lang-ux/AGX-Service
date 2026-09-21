@@ -405,10 +405,12 @@ function DistributorDashboard() {
             </div>
           </div>
 
-          <DistributorWithdrawalPanel
-            availableBalance={wallet?.availableBalance || 0}
-            onWalletRefresh={loadWallet}
-          />
+          <div className="distributor-withdrawal-full-width">
+            <DistributorWithdrawalPanel
+              availableBalance={wallet?.availableBalance || 0}
+              onWalletRefresh={loadWallet}
+            />
+          </div>
 
           <div
             className="dashboard-section-head"
