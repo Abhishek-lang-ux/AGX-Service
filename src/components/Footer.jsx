@@ -31,6 +31,7 @@ function Footer() {
           <Link to="/login">Sign In</Link>
           <Link to="/register">Create Account</Link>
           <a href="/retailer/register">Become a Retailer</a>
+          <a href="/distributor/register">Become a Distributor</a>
           <Link to="/contact">Contact Us</Link>
         </div>
 

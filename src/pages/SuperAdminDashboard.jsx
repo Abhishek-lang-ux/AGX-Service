@@ -13,7 +13,7 @@ import {
 
 import { useEffect, useState } from "react";
 
-import { getSuperAdminDashboard, getPendingRetailers, updateRetailerApproval } from "../lib/api.js";
+import { getSuperAdminDashboard, getPendingRetailers, updateRetailerApproval, getPendingDistributors, updateDistributorApproval } from "../lib/api.js";
 
 import DistributorManagement from "../components/DistributorManagement.jsx";
 import RetailerDistributorMapping from "../components/RetailerDistributorMapping.jsx";
@@ -81,6 +81,10 @@ function SuperAdminDashboard() {
   const [retailerLoading, setRetailerLoading] = useState(true);
   const [retailerActionId, setRetailerActionId] = useState(null);
   const [retailerError, setRetailerError] = useState("");
+  const [pendingDistributors, setPendingDistributors] = useState([]);
+  const [distributorLoading, setDistributorLoading] = useState(true);
+  const [distributorActionId, setDistributorActionId] = useState(null);
+  const [distributorError, setDistributorError] = useState("");
 
   async function loadDashboard(showRefresh = false) {
     try {
@@ -105,16 +109,12 @@ function SuperAdminDashboard() {
     }
   }
 
-  useEffect(() => {
-    loadDashboard();
-  }, []);
   async function loadPendingRetailers() {
     try {
       setRetailerLoading(true);
       setRetailerError("");
 
       const response = await getPendingRetailers();
-
       setPendingRetailers(response?.retailers || []);
     } catch (err) {
       setRetailerError(
@@ -125,8 +125,28 @@ function SuperAdminDashboard() {
     }
   }
 
+  async function loadPendingDistributors() {
+    try {
+      setDistributorLoading(true);
+      setDistributorError("");
+
+      const response = await getPendingDistributors();
+      setPendingDistributors(response?.distributors || []);
+    } catch (err) {
+      setDistributorError(
+        err?.message || "Unable to load distributor applications."
+      );
+    } finally {
+      setDistributorLoading(false);
+    }
+  }
+
   useEffect(() => {
     loadPendingRetailers();
+  }, []);
+
+  useEffect(() => {
+    loadPendingDistributors();
   }, []);
 
   async function handleRetailerApproval(retailerId, action) {
@@ -135,7 +155,6 @@ function SuperAdminDashboard() {
       setRetailerError("");
 
       await updateRetailerApproval(retailerId, action);
-
       await loadPendingRetailers();
     } catch (err) {
       setRetailerError(
@@ -146,7 +165,21 @@ function SuperAdminDashboard() {
     }
   }
 
+  async function handleDistributorApproval(distributorId, action) {
+    try {
+      setDistributorActionId(distributorId);
+      setDistributorError("");
 
+      await updateDistributorApproval(distributorId, action);
+      await loadPendingDistributors();
+    } catch (err) {
+      setDistributorError(
+        err?.message || "Unable to update distributor application."
+      );
+    } finally {
+      setDistributorActionId(null);
+    }
+  }
   if (loading) {
     return (
       <main className="superadmin-page">
@@ -508,6 +541,99 @@ function SuperAdminDashboard() {
                             className="retailer-reject-btn"
                             disabled={retailerActionId === retailer.id}
                             onClick={() => handleRetailerApproval(retailer.id, "reject")}
+                          >
+                            <AlertCircle size={15} />
+                            Reject
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
+
+        {/* PENDING DISTRIBUTOR APPLICATIONS */}
+        <section className="superadmin-panel retailer-applications-panel">
+
+          <div className="superadmin-section-head">
+            <div>
+              <span>DISTRIBUTOR MANAGEMENT</span>
+              <h2>Pending Distributor Applications</h2>
+            </div>
+
+            <UserRoundCog size={19} />
+          </div>
+
+          {distributorError && (
+            <div className="superadmin-inline-error">
+              <AlertCircle size={16} />
+              <span>{distributorError}</span>
+            </div>
+          )}
+
+          {distributorLoading ? (
+            <div className="retailer-empty-state">
+              <div className="superadmin-loader" />
+              <span>Loading distributor applications...</span>
+            </div>
+          ) : pendingDistributors.length === 0 ? (
+            <div className="retailer-empty-state">
+              <CheckCircle2 size={24} />
+              <strong>No pending distributor applications</strong>
+              <span>New distributor registrations will appear here.</span>
+            </div>
+          ) : (
+            <div className="superadmin-table-wrapper">
+              <table className="superadmin-table">
+                <thead>
+                  <tr>
+                    <th>Distributor</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Applied</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {pendingDistributors.map((distributor) => (
+                    <tr key={distributor.id}>
+                      <td>
+                        <strong>{getFullName(distributor)}</strong>
+                      </td>
+                      <td>{distributor.email}</td>
+                      <td>{distributor.phone || "—"}</td>
+                      <td>{formatDate(distributor.createdAt)}</td>
+                      <td>
+                        <span className="status-badge status-pending">
+                          Pending
+                        </span>
+                      </td>
+                      <td>
+                        <div className="retailer-action-group">
+                          <button
+                            type="button"
+                            className="retailer-approve-btn"
+                            disabled={distributorActionId === distributor.id}
+                            onClick={() =>
+                              handleDistributorApproval(distributor.id, "approve")
+                            }
+                          >
+                            <CheckCircle2 size={15} />
+                            Approve
+                          </button>
+
+                          <button
+                            type="button"
+                            className="retailer-reject-btn"
+                            disabled={distributorActionId === distributor.id}
+                            onClick={() =>
+                              handleDistributorApproval(distributor.id, "reject")
+                            }
                           >
                             <AlertCircle size={15} />
                             Reject

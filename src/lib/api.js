@@ -824,6 +824,20 @@ export async function updateRetailerApproval(retailerId, action) {
     }
   );
 }
+export async function getPendingDistributors() {
+  return apiRequest("/superadmin/distributors/pending");
+}
+
+export async function updateDistributorApproval(distributorId, action) {
+  return apiRequest(
+    `/superadmin/distributors/${encodeURIComponent(distributorId)}/approval`,
+    {
+      method: "PATCH",
+      body: JSON.stringify({ action }),
+    }
+  );
+}
+
 
 /* =========================================================
    SUPERADMIN REQUESTS

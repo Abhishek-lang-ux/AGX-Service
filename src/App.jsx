@@ -16,6 +16,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Register from "./pages/Register";
 import RetailerRegister from "./pages/RetailerRegister";
+import DistributorRegister from "./pages/DistributorRegister";
 
 import Dashboard from "./pages/Dashboard";
 import RetailerDashboard from "./pages/RetailerDashboard";
@@ -88,6 +89,7 @@ function AppLayout() {
 
         <Route path="/register" element={<Register />} />
         <Route path="/retailer/register" element={<RetailerRegister />} />
+        <Route path="/distributor/register" element={<DistributorRegister />} />
 
 
         {/* =========================
