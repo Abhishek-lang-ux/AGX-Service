@@ -163,7 +163,7 @@ function DistributorWithdrawalPanel({ availableBalance = 0, onWalletRefresh }) {
   }
 
   return (
-    <section style={{ marginTop: 28 }}>
+    <section className="distributor-withdrawal-section">
       <div className="dashboard-section-head">
         <div>
           <span className="dashboard-section-label">WITHDRAWALS</span>
