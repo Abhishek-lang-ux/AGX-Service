@@ -846,3 +846,60 @@
   display: block;
   object-fit: cover;
 }
+/* =========================================================
+   DISTRIBUTOR WITHDRAWAL LAYOUT
+========================================================= */
+
+.withdrawal-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(320px, 0.85fr);
+  gap: 24px;
+  align-items: start;
+  width: 100%;
+}
+
+.withdrawal-layout > * {
+  min-width: 0;
+}
+
+.withdrawal-layout .dashboard-primary,
+.withdrawal-layout .dashboard-secondary {
+  width: 100%;
+  min-width: 0;
+}
+
+.withdrawal-layout .request-card {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.withdrawal-layout input {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.withdrawal-layout .request-service {
+  min-width: 0;
+}
+
+.withdrawal-layout .request-service > div:last-child {
+  min-width: 0;
+}
+
+.withdrawal-layout .request-service span,
+.withdrawal-layout .request-service strong {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 900px) {
+  .withdrawal-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .withdrawal-layout {
+    gap: 16px;
+  }
+}

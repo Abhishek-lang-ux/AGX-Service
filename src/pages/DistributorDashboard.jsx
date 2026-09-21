@@ -352,9 +352,9 @@ function DistributorDashboard() {
             >
               <div>
                 <span className="dashboard-section-label">
-                  COMING NEXT
+                  WALLET
                 </span>
-                <h2>Distributor Management</h2>
+                <h2>Commission Wallet</h2>
               </div>
             </div>
 
