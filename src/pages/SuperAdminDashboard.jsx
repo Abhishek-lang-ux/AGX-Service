@@ -147,7 +147,8 @@ function SuperAdminDashboard() {
   }, []);
 
   useEffect(() => {
-    loadPendingDistributors();  }, []);
+    loadPendingDistributors();
+  }, []);
 
   async function handleRetailerApproval(retailerId, action) {
     try {
