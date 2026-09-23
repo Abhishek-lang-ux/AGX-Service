@@ -10,7 +10,11 @@ import {
 import { apiRequest } from "../lib/api.js";
 
 function getFullName(user) {
-  const name = `${user?.firstName || ""} ${user?.lastName || ""}`.trim();
+  const name = (
+    user?.name ||
+    `${user?.firstName || user?.first_name || ""} ${user?.lastName || user?.last_name || ""}`
+  ).trim();
+
   return name || user?.email || "Unknown User";
 }
 
