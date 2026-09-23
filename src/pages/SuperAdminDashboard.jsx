@@ -142,11 +142,15 @@ function SuperAdminDashboard() {
   }
 
   useEffect(() => {
+    loadDashboard();
     loadPendingRetailers();
   }, []);
 
   useEffect(() => {
     loadPendingDistributors();
+  useEffect(() => {
+    loadDashboard();
+  }, []);
   }, []);
 
   async function handleRetailerApproval(retailerId, action) {
@@ -172,6 +176,9 @@ function SuperAdminDashboard() {
 
       await updateDistributorApproval(distributorId, action);
       await loadPendingDistributors();
+  useEffect(() => {
+    loadDashboard();
+  }, []);
     } catch (err) {
       setDistributorError(
         err?.message || "Unable to update distributor application."
