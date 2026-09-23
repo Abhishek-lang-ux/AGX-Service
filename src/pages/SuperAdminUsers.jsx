@@ -16,6 +16,8 @@ import {
   getSuperAdminUsers,
   updateSuperAdminUserStatus,
   updateSuperAdminUserRole,
+  resetSuperAdminUserPassword,
+  deleteSuperAdminUser,
 } from "../lib/api.js";
 
 import "./superadmin-users.css";
@@ -103,6 +105,13 @@ function SuperAdminUsers() {
   });
 
   const [updatingId, setUpdatingId] = useState(null);
+
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [actionMenuId, setActionMenuId] = useState(null);
+  const [modal, setModal] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [actionError, setActionError] = useState("");
 
 
   const loadUsers = useCallback(
@@ -235,6 +244,106 @@ function SuperAdminUsers() {
   }
 
 
+
+  const closeUserModal = () => {
+    setModal("");
+    setSelectedUser(null);
+    setActionMenuId(null);
+    setNewPassword("");
+    setConfirmPassword("");
+    setActionError("");
+  };
+
+  const openUserActions = (user) => {
+    setActionMenuId((current) =>
+      current === user.id ? null : user.id
+    );
+  };
+
+  const viewUserProfile = (user) => {
+    setSelectedUser(user);
+    setActionMenuId(null);
+    setActionError("");
+    setModal("view");
+  };
+
+  const resetUserPasswordModal = (user) => {
+    if (user.role === "superadmin") {
+      window.alert(
+        "SuperAdmin password cannot be reset from User Management."
+      );
+      return;
+    }
+
+    setSelectedUser(user);
+    setActionMenuId(null);
+    setNewPassword("");
+    setConfirmPassword("");
+    setActionError("");
+    setModal("reset");
+  };
+
+  const deleteUserModal = (user) => {
+    if (user.role === "superadmin") {
+      window.alert("SuperAdmin account cannot be deleted.");
+      return;
+    }
+
+    setSelectedUser(user);
+    setActionMenuId(null);
+    setActionError("");
+    setModal("delete");
+  };
+
+  const handleResetPassword = async () => {
+    if (!selectedUser) return;
+
+    if (newPassword.length < 8) {
+      setActionError("Password must be at least 8 characters.");
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setActionError("Passwords do not match.");
+      return;
+    }
+
+    try {
+      setActionError("");
+
+      await resetSuperAdminUserPassword(
+        selectedUser.id,
+        newPassword
+      );
+
+      window.alert("Password reset successfully.");
+      closeUserModal();
+    } catch (error) {
+      setActionError(
+        error?.message || "Failed to reset password."
+      );
+    }
+  };
+
+  const handleDeleteUser = async () => {
+    if (!selectedUser) return;
+
+    try {
+      setActionError("");
+
+      await deleteSuperAdminUser(selectedUser.id);
+
+      closeUserModal();
+      await loadUsers();
+
+      window.alert("User deleted successfully.");
+    } catch (error) {
+      setActionError(
+        error?.message || "Failed to delete user."
+      );
+    }
+  };
+
   return (
     <div className="superadmin-section-page">
 
@@ -310,6 +419,8 @@ function SuperAdminUsers() {
         >
           <option value="">All Roles</option>
           <option value="client">Client</option>
+          <option value="retailer">Retailer</option>
+          <option value="distributor">Distributor</option>
           <option value="staff">Staff</option>
           <option value="admin">Admin</option>
           <option value="superadmin">
@@ -490,6 +601,12 @@ function SuperAdminUsers() {
                           <option value="client">
                             Client
                           </option>
+                          <option value="retailer">
+                            Retailer
+                          </option>
+                          <option value="distributor">
+                            Distributor
+                          </option>
 
                           <option value="staff">
                             Staff
@@ -563,16 +680,51 @@ function SuperAdminUsers() {
 
                       {/* ACTION */}
                       <td>
-                        <button
-                          type="button"
-                          className="superadmin-user-action"
-                          title="User actions"
-                        >
-                          <MoreHorizontal
-                            size={18}
-                          />
-                        </button>
-                      </td>
+                          <div className="superadmin-user-action-wrap">
+                            <button
+                              type="button"
+                              className="superadmin-user-action"
+                              title="User actions"
+                              onClick={() => openUserActions(user)}
+                            >
+                              <MoreHorizontal size={18} />
+                            </button>
+
+                            {actionMenuId === user.id && (
+                              <div className="superadmin-user-action-menu">
+                                <button
+                                  type="button"
+                                  onClick={() => viewUserProfile(user)}
+                                >
+                                  👁️ View Profile
+                                </button>
+
+                                {user.role !== "superadmin" && (
+                                  <>
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        resetUserPasswordModal(user)
+                                      }
+                                    >
+                                      🔐 Reset Password
+                                    </button>
+
+                                    <button
+                                      type="button"
+                                      className="danger"
+                                      onClick={() =>
+                                        deleteUserModal(user)
+                                      }
+                                    >
+                                      🗑️ Delete User
+                                    </button>
+                                  </>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        </td>
 
                     </tr>
                   );
@@ -633,6 +785,202 @@ function SuperAdminUsers() {
 
           </div>
         )}
+
+
+      {modal === "view" && selectedUser && (
+        <div
+          className="superadmin-user-modal-backdrop"
+          onClick={closeUserModal}
+        >
+          <div
+            className="superadmin-user-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="superadmin-user-modal-header">
+              <h3>View User Profile</h3>
+              <button
+                type="button"
+                onClick={closeUserModal}
+                className="superadmin-user-modal-close"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="superadmin-user-profile-grid">
+              <div>
+                <span>User ID</span>
+                <strong>{selectedUser.id ?? "—"}</strong>
+              </div>
+              <div>
+                <span>UUID</span>
+                <strong>{selectedUser.uuid ?? "—"}</strong>
+              </div>
+              <div>
+                <span>Email</span>
+                <strong>{selectedUser.email ?? "—"}</strong>
+              </div>
+              <div>
+                <span>Phone</span>
+                <strong>{selectedUser.phone ?? "—"}</strong>
+              </div>
+              <div>
+                <span>Role</span>
+                <strong>{selectedUser.role ?? "—"}</strong>
+              </div>
+              <div>
+                <span>Status</span>
+                <strong>{selectedUser.status ?? "—"}</strong>
+              </div>
+              <div>
+                <span>Joined</span>
+                <strong>{formatDate(selectedUser.createdAt)}</strong>
+              </div>
+              <div>
+                <span>Last Login</span>
+                <strong>{formatDate(selectedUser.lastLoginAt)}</strong>
+              </div>
+            </div>
+
+            <div className="superadmin-modal-footer">
+              <button
+                type="button"
+                className="superadmin-modal-primary"
+                onClick={closeUserModal}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {modal === "reset" && selectedUser && (
+        <div
+          className="superadmin-user-modal-backdrop"
+          onClick={closeUserModal}
+        >
+          <div
+            className="superadmin-user-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="superadmin-user-modal-header">
+              <h3>Reset Password</h3>
+              <button
+                type="button"
+                onClick={closeUserModal}
+                className="superadmin-user-modal-close"
+              >
+                ×
+              </button>
+            </div>
+
+            <p>
+              Set a new password for{" "}
+              <strong>{selectedUser.email}</strong>.
+            </p>
+
+            <div className="superadmin-password-form">
+              <label>
+                New Password
+                <input
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Minimum 8 characters"
+                  autoComplete="new-password"
+                />
+              </label>
+
+              <label>
+                Confirm Password
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Confirm new password"
+                  autoComplete="new-password"
+                />
+              </label>
+            </div>
+
+            {actionError && (
+              <div className="superadmin-modal-error">
+                {actionError}
+              </div>
+            )}
+
+            <div className="superadmin-modal-footer">
+              <button type="button" onClick={closeUserModal}>
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                className="superadmin-modal-primary"
+                onClick={handleResetPassword}
+              >
+                Reset Password
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {modal === "delete" && selectedUser && (
+        <div
+          className="superadmin-user-modal-backdrop"
+          onClick={closeUserModal}
+        >
+          <div
+            className="superadmin-user-modal superadmin-delete-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="superadmin-user-modal-header">
+              <h3>Delete User</h3>
+              <button
+                type="button"
+                onClick={closeUserModal}
+                className="superadmin-user-modal-close"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="superadmin-delete-icon">🗑️</div>
+
+            <p>
+              Are you sure you want to permanently delete{" "}
+              <strong>{selectedUser.email}</strong>?
+            </p>
+
+            <p className="superadmin-delete-warning">
+              This action cannot be undone. Users with linked
+              business records will be protected by the backend.
+            </p>
+
+            {actionError && (
+              <div className="superadmin-modal-error">
+                {actionError}
+              </div>
+            )}
+
+            <div className="superadmin-modal-footer">
+              <button type="button" onClick={closeUserModal}>
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                className="superadmin-modal-danger"
+                onClick={handleDeleteUser}
+              >
+                Delete User
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       </div>
 
