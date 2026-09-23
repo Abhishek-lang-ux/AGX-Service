@@ -802,6 +802,25 @@ export async function updateSuperAdminUserRole(
   );
 }
 
+export async function resetSuperAdminUserPassword(userId, password) {
+  return apiRequest(
+    `/superadmin/users/${encodeURIComponent(userId)}/reset-password`,
+    {
+      method: "PATCH",
+      body: JSON.stringify({ password }),
+    }
+  );
+}
+
+export async function deleteSuperAdminUser(userId) {
+  return apiRequest(
+    `/superadmin/users/${encodeURIComponent(userId)}`,
+    {
+      method: "DELETE",
+    }
+  );
+}
+
 /* =========================================================
    SUPERADMIN RETAILERS
 ========================================================= */
@@ -1088,7 +1107,7 @@ export async function getRetailerDistributorMapping() {
 
 export async function assignRetailerDistributor(retailerId, distributorId) {
   return apiRequest(
-    `/superadmin/retailers/${encodeURIComponent(retailerId)}/distributor`,
+    `/superadmin/retailer-distributor-mapping/${encodeURIComponent(retailerId)}`,
     {
       method: "PATCH",
       body: JSON.stringify({
