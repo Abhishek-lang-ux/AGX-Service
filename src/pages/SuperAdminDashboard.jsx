@@ -142,6 +142,7 @@ function SuperAdminDashboard() {
   }
 
   useEffect(() => {
+    loadDashboard();
     loadPendingRetailers();
   }, []);
 
