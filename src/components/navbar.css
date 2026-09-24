@@ -376,7 +376,7 @@
   }
 
   .nav-actions {
-    display: none;
+    display: flex;
   }
 
   .mobile-menu-btn {
